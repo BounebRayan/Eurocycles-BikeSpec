@@ -265,7 +265,15 @@ Public Class NomenclatureRepository
         command.Parameters.AddWithValue("@RefCustomer", If(CObj(n.RefCustomer), DBNull.Value))
         command.Parameters.AddWithValue("@Couleur", If(CObj(n.Couleur), DBNull.Value))
         command.Parameters.AddWithValue("@TypeDecor", If(CObj(n.TypeDecor), DBNull.Value))
-        command.Parameters.AddWithValue("@Photo", If(CObj(n.Photo), DBNull.Value))
+
+        ' AddWithValue can't be used here: when n.Photo is Nothing, it would pass DBNull.Value
+        ' with no informative .NET type to infer from, so SqlClient defaults the parameter to
+        ' NVarChar - which SQL Server then refuses to implicitly convert into VARBINARY(MAX),
+        ' throwing "Implicit conversion from data type nvarchar to varbinary(max) is not
+        ' allowed" on every Insert/Update of a record with no photo. Explicit SqlDbType avoids
+        ' the ambiguous inference entirely.
+        Dim photoParam = command.Parameters.Add("@Photo", SqlDbType.VarBinary, -1)
+        photoParam.Value = If(CObj(n.Photo), DBNull.Value)
     End Sub
 
     Private Shared Function MapHeader(reader As SqlDataReader) As Nomenclature
