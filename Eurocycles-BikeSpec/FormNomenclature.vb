@@ -1,3 +1,4 @@
+Imports System.ComponentModel
 Imports System.Globalization
 Imports System.IO
 Imports System.Linq
@@ -7,6 +8,7 @@ Public Class FormNomenclature
     Private ReadOnly _isNewMode As Boolean
     Private ReadOnly _nomenclature As Nomenclature
     Private ReadOnly _repository As New NomenclatureRepository()
+    Private _lignes As BindingList(Of LigneNomenclature)
     Private _isDirty As Boolean
 
     Public Sub New()
@@ -58,8 +60,8 @@ Public Class FormNomenclature
             If lines Is Nothing Then lines = New List(Of LigneNomenclature)()
         End If
 
-        bsLignes.DataSource = lines
-        dgvLignes.DataSource = bsLignes
+        _lignes = New BindingList(Of LigneNomenclature)(lines)
+        dgvLignes.DataSource = _lignes
         RefreshTotals()
 
         ' Wired after PopulateForm()/lines are bound so initial population never marks the form dirty.
@@ -87,7 +89,7 @@ Public Class FormNomenclature
     End Sub
 
     Private Sub RefreshTotals()
-        lblTotaux.Text = LigneTotalsCalculator.FormatTotals(bsLignes.List.Cast(Of LigneNomenclature)())
+        lblTotaux.Text = LigneTotalsCalculator.FormatTotals(_lignes)
     End Sub
 
     Private Sub dgvLignes_CellEndEdit(sender As Object, e As DataGridViewCellEventArgs) Handles dgvLignes.CellEndEdit
@@ -181,7 +183,7 @@ Public Class FormNomenclature
             .Devise = "Euro",
             .Imprime = False
         }
-        bsLignes.Add(newLine)
+        _lignes.Add(newLine)
         dgvLignes.CurrentCell = dgvLignes.Rows(dgvLignes.Rows.Count - 1).Cells("colDesignation")
         dgvLignes.BeginEdit(True)
         _isDirty = True
@@ -191,7 +193,15 @@ Public Class FormNomenclature
     Private Sub btnSupprimerLigne_Click(sender As Object, e As EventArgs) Handles btnSupprimerLigne.Click
         Dim line = TryCast(dgvLignes.CurrentRow?.DataBoundItem, LigneNomenclature)
         If line Is Nothing Then Return
-        bsLignes.Remove(line)
+
+        Dim confirm = MessageBox.Show(
+            "Supprimer cette ligne ?",
+            "Confirmation",
+            MessageBoxButtons.YesNo,
+            MessageBoxIcon.Question)
+        If confirm <> DialogResult.Yes Then Return
+
+        _lignes.Remove(line)
         _isDirty = True
         RefreshTotals()
     End Sub
@@ -261,6 +271,59 @@ Public Class FormNomenclature
         Return isValid
     End Function
 
+    ''' <summary>
+    ''' Validates every ligne (Code required+unique, Designation required, Quantite > 0,
+    ''' Prix >= 0, Devise selected), highlighting failures on the grid cells themselves
+    ''' via DataGridViewCell.ErrorText rather than a single generic message.
+    ''' </summary>
+    Private Function ValidateLignes() As Boolean
+        Dim isValid = True
+        ClearLigneErrors()
+
+        For i = 0 To _lignes.Count - 1
+            Dim line = _lignes(i)
+            Dim row = dgvLignes.Rows(i)
+
+            If String.IsNullOrWhiteSpace(line.Code) Then
+                row.Cells("colCode").ErrorText = "Le code est obligatoire."
+                isValid = False
+            ElseIf _lignes.AsEnumerable().Count(Function(l) l.Code = line.Code) > 1 Then
+                row.Cells("colCode").ErrorText = "Le code doit être unique."
+                isValid = False
+            End If
+
+            If String.IsNullOrWhiteSpace(line.Designation) Then
+                row.Cells("colDesignation").ErrorText = "La désignation est obligatoire."
+                isValid = False
+            End If
+
+            If line.Quantite <= 0 Then
+                row.Cells("colQuantite").ErrorText = "La quantité doit être supérieure à 0."
+                isValid = False
+            End If
+
+            If line.Prix < 0 Then
+                row.Cells("colPrix").ErrorText = "Le prix ne peut pas être négatif."
+                isValid = False
+            End If
+
+            If String.IsNullOrWhiteSpace(line.Devise) Then
+                row.Cells("colDevise").ErrorText = "La devise est obligatoire."
+                isValid = False
+            End If
+        Next
+
+        Return isValid
+    End Function
+
+    Private Sub ClearLigneErrors()
+        For Each row As DataGridViewRow In dgvLignes.Rows
+            For Each cell As DataGridViewCell In row.Cells
+                cell.ErrorText = String.Empty
+            Next
+        Next
+    End Sub
+
     Private Sub ApplyFormToNomenclature()
         _nomenclature.Code = txtCode.Text.Trim()
         _nomenclature.Nom = txtNom.Text.Trim()
@@ -279,12 +342,15 @@ Public Class FormNomenclature
 
     Private Sub btnEnregistrer_Click(sender As Object, e As EventArgs) Handles btnEnregistrer.Click
         dgvLignes.EndEdit()
-        bsLignes.EndEdit()
 
-        If Not ValidateForm() Then Return
+        ' Evaluate both unconditionally so header AND ligne errors are all shown together,
+        ' not just whichever fails first.
+        Dim headerValid = ValidateForm()
+        Dim lignesValid = ValidateLignes()
+        If Not headerValid OrElse Not lignesValid Then Return
 
         ApplyFormToNomenclature()
-        _nomenclature.Lignes = bsLignes.List.Cast(Of LigneNomenclature)().ToList()
+        _nomenclature.Lignes = _lignes.ToList()
 
         Try
             If _isNewMode Then
@@ -306,11 +372,10 @@ Public Class FormNomenclature
 
     Private Sub btnApercu_Click(sender As Object, e As EventArgs) Handles btnApercu.Click
         dgvLignes.EndEdit()
-        bsLignes.EndEdit()
 
         ' Preview reflects whatever is currently entered, even if not yet saved.
         ApplyFormToNomenclature()
-        Dim lines = bsLignes.List.Cast(Of LigneNomenclature)().ToList()
+        Dim lines = _lignes.ToList()
         _nomenclature.Lignes = lines
 
         Using form As New FormApercu(_nomenclature, lines)

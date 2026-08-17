@@ -20,7 +20,6 @@ Partial Class FormNomenclature
         components = New System.ComponentModel.Container()
 
         Me.errorProvider = New ErrorProvider(Me.components)
-        Me.bsLignes = New BindingSource(Me.components)
 
         Me.pnlHeader = New Panel()
         Me.tlpHeader = New TableLayoutPanel()
@@ -70,7 +69,6 @@ Partial Class FormNomenclature
         Me.btnApercu = New Button()
 
         CType(Me.errorProvider, System.ComponentModel.ISupportInitialize).BeginInit()
-        CType(Me.bsLignes, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.picPhoto, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.dgvLignes, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.pnlHeader.SuspendLayout()
@@ -224,7 +222,7 @@ Partial Class FormNomenclature
         Me.picPhoto.SizeMode = PictureBoxSizeMode.Zoom
         Me.btnChargerPhoto.Location = New Point(15, 155)
         Me.btnChargerPhoto.Size = New Size(160, 28)
-        Me.btnChargerPhoto.Text = "Charger..."
+        Me.btnChargerPhoto.Text = "Choisir photo..."
         Me.btnSupprimerPhoto.Location = New Point(15, 189)
         Me.btnSupprimerPhoto.Size = New Size(160, 28)
         Me.btnSupprimerPhoto.Text = "Supprimer"
@@ -234,7 +232,7 @@ Partial Class FormNomenclature
 
         ' grpLignes
         Me.grpLignes.Dock = DockStyle.Fill
-        Me.grpLignes.Text = "Lignes de nomenclature"
+        Me.grpLignes.Text = "Lignes de la nomenclature"
         Me.grpLignes.Controls.Add(Me.dgvLignes)
         Me.grpLignes.Controls.Add(Me.pnlTotaux)
         Me.grpLignes.Controls.Add(Me.pnlLignesButtons)
@@ -254,10 +252,10 @@ Partial Class FormNomenclature
         Me.pnlLignesButtons.FlowDirection = FlowDirection.LeftToRight
         Me.pnlLignesButtons.Padding = New Padding(5)
         Me.btnAjouterLigne.AutoSize = True
-        Me.btnAjouterLigne.Text = "Ajouter une ligne"
+        Me.btnAjouterLigne.Text = "Ajouter ligne"
         Me.btnAjouterLigne.Margin = New Padding(3)
         Me.btnSupprimerLigne.AutoSize = True
-        Me.btnSupprimerLigne.Text = "Supprimer la ligne"
+        Me.btnSupprimerLigne.Text = "Supprimer ligne"
         Me.btnSupprimerLigne.Margin = New Padding(3)
         Me.pnlLignesButtons.Controls.Add(Me.btnAjouterLigne)
         Me.pnlLignesButtons.Controls.Add(Me.btnSupprimerLigne)
@@ -272,35 +270,42 @@ Partial Class FormNomenclature
         Me.dgvLignes.AutoGenerateColumns = False
         Me.dgvLignes.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
 
-        Dim colDesignation As New DataGridViewTextBoxColumn() With {
-            .Name = "colDesignation", .HeaderText = "Désignation", .DataPropertyName = "Designation", .FillWeight = 30
+        Dim colCode As New DataGridViewTextBoxColumn() With {
+            .Name = "colCode", .HeaderText = "Code", .DataPropertyName = "Code", .FillWeight = 14
         }
+        colCode.MaxInputLength = 20 ' matches LigneNomenclature.Code NVARCHAR(20)
+        Dim colDesignation As New DataGridViewTextBoxColumn() With {
+            .Name = "colDesignation", .HeaderText = "Désignation", .DataPropertyName = "Designation", .FillWeight = 22
+        }
+        colDesignation.MaxInputLength = 150
         Dim colQuantite As New DataGridViewTextBoxColumn() With {
-            .Name = "colQuantite", .HeaderText = "Qté", .DataPropertyName = "Quantite", .FillWeight = 10
+            .Name = "colQuantite", .HeaderText = "Qté", .DataPropertyName = "Quantite", .FillWeight = 9
         }
         colQuantite.DefaultCellStyle.Format = "N2"
         colQuantite.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight
         Dim colPrix As New DataGridViewTextBoxColumn() With {
-            .Name = "colPrix", .HeaderText = "Prix", .DataPropertyName = "Prix", .FillWeight = 12
+            .Name = "colPrix", .HeaderText = "Prix", .DataPropertyName = "Prix", .FillWeight = 11
         }
         colPrix.DefaultCellStyle.Format = "N3"
         colPrix.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight
-        Dim colDevise As New DataGridViewComboBoxColumn() With {
-            .Name = "colDevise", .HeaderText = "Devise", .DataPropertyName = "Devise", .FillWeight = 10
-        }
-        colDevise.Items.AddRange(AllowedValues.Devises)
         Dim colFabricant As New DataGridViewTextBoxColumn() With {
-            .Name = "colFabricant", .HeaderText = "Fabricant", .DataPropertyName = "Fabricant", .FillWeight = 18
+            .Name = "colFabricant", .HeaderText = "Fabricant", .DataPropertyName = "Fabricant", .FillWeight = 16
         }
+        colFabricant.MaxInputLength = 100
         Dim colImprime As New DataGridViewCheckBoxColumn() With {
             .Name = "colImprime", .HeaderText = "Imprimé", .DataPropertyName = "Imprime", .FillWeight = 8
         }
         Dim colObservation As New DataGridViewTextBoxColumn() With {
-            .Name = "colObservation", .HeaderText = "Observation", .DataPropertyName = "Observation", .FillWeight = 22
+            .Name = "colObservation", .HeaderText = "Observation", .DataPropertyName = "Observation", .FillWeight = 18
         }
+        colObservation.MaxInputLength = 255
+        Dim colDevise As New DataGridViewComboBoxColumn() With {
+            .Name = "colDevise", .HeaderText = "Devise", .DataPropertyName = "Devise", .FillWeight = 8
+        }
+        colDevise.Items.AddRange(AllowedValues.Devises)
 
         Me.dgvLignes.Columns.AddRange(New DataGridViewColumn() {
-            colDesignation, colQuantite, colPrix, colDevise, colFabricant, colImprime, colObservation
+            colCode, colDesignation, colQuantite, colPrix, colFabricant, colImprime, colObservation, colDevise
         })
 
         ' pnlBottom
@@ -335,7 +340,6 @@ Partial Class FormNomenclature
         Me.Controls.Add(Me.pnlHeader)
 
         CType(Me.errorProvider, System.ComponentModel.ISupportInitialize).EndInit()
-        CType(Me.bsLignes, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.picPhoto, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.dgvLignes, System.ComponentModel.ISupportInitialize).EndInit()
         Me.pnlHeader.ResumeLayout(False)
@@ -350,7 +354,6 @@ Partial Class FormNomenclature
     End Sub
 
     Friend WithEvents errorProvider As ErrorProvider
-    Friend WithEvents bsLignes As BindingSource
     Friend WithEvents pnlHeader As Panel
     Friend WithEvents tlpHeader As TableLayoutPanel
     Friend WithEvents lblCode As Label
