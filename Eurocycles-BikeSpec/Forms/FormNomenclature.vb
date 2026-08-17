@@ -106,7 +106,15 @@ Public Class FormNomenclature
 
     Private Sub FormNomenclature_FormClosing(sender As Object, e As FormClosingEventArgs) Handles Me.FormClosing
         If Me.DialogResult = DialogResult.OK Then Return ' saved successfully, nothing to warn about
-        If Not _isDirty Then Return
+        If Not ConfirmDiscard() Then e.Cancel = True
+    End Sub
+
+    ''' <summary>Returns True if it's fine to throw away this form's current state: either there's
+    ''' nothing unsaved, or the user confirmed discarding it. Shared by the normal FormClosing
+    ''' prompt and by the host (FormListe), which needs the same confirmation when discarding a
+    ''' suspended edit session (detached but not yet closed) instead of resuming it.</summary>
+    Public Function ConfirmDiscard() As Boolean
+        If Not _isDirty Then Return True
 
         Dim confirm = MessageBox.Show(
             "Des modifications n'ont pas été enregistrées. Voulez-vous vraiment fermer sans enregistrer ?",
@@ -114,10 +122,8 @@ Public Class FormNomenclature
             MessageBoxButtons.YesNo,
             MessageBoxIcon.Warning)
 
-        If confirm <> DialogResult.Yes Then
-            e.Cancel = True
-        End If
-    End Sub
+        Return confirm = DialogResult.Yes
+    End Function
 
     Private Sub PopulateForm()
         txtCode.Text = _nomenclature.Code

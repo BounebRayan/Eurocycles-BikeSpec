@@ -145,7 +145,7 @@ Public Class FormListe
 
     Private Sub dgvNomenclatures_CellDoubleClick(sender As Object, e As DataGridViewCellEventArgs) Handles dgvNomenclatures.CellDoubleClick
         If e.RowIndex >= 0 Then
-            OpenEditForSelected()
+            btnApercu_Click(sender, e)
         End If
     End Sub
 
@@ -229,7 +229,7 @@ Public Class FormListe
 
         If Not ReferenceEquals(_activeContentForm, previewForm) Then Return ' already navigated away via Modifier
 
-        ResumeSuspendedEditOrShowList()
+        DiscardSuspendedEditAndShowList()
     End Sub
 
     Private Sub PreviewForm_ModifierRequested(sender As Object, e As EventArgs)
@@ -252,6 +252,29 @@ Public Class FormListe
             ShowEmbedded(resumed, subtitle)
         Else
             ShowListView()
+        End If
+    End Sub
+
+    ''' <summary>Fermer always means "back to the list", even when the Aperçu was reached from an
+    ''' in-progress edit (Modifier -> Aperçu). If a suspended edit session is behind this preview,
+    ''' confirm before discarding its unsaved changes (the same prompt Annuler uses) rather than
+    ''' silently resuming it.</summary>
+    Private Sub DiscardSuspendedEditAndShowList()
+        If _suspendedEditForm Is Nothing Then
+            ShowListView()
+            Return
+        End If
+
+        Dim suspended = _suspendedEditForm
+        Dim subtitle = _suspendedEditSubtitle
+        _suspendedEditForm = Nothing
+
+        If suspended.ConfirmDiscard() Then
+            suspended.Dispose()
+            ShowListView()
+        Else
+            ' user chose to keep the unsaved changes - fall back to showing the edit form
+            ShowEmbedded(suspended, subtitle)
         End If
     End Sub
 
