@@ -34,8 +34,8 @@ Or in SQL Server Management Studio / Azure Data Studio: connect to
 ### Option B — build it from scratch
 
 ```powershell
-sqlcmd -S "(localdb)\MSSQLLocalDB" -i Schema.sql
-sqlcmd -S "(localdb)\MSSQLLocalDB" -i SeedData.sql   # optional sample data
+sqlcmd -S "(localdb)\MSSQLLocalDB" -i Database/Schema.sql
+sqlcmd -S "(localdb)\MSSQLLocalDB" -i Database/SeedData.sql   # optional sample data
 ```
 
 `Schema.sql` creates the schema (`Nomenclature`, `LigneNomenclature`,
@@ -86,9 +86,10 @@ Eurocycles-BikeSpec/                  the app project
 │   └── FormApercu                    read-only preview + print screen
 └── App.config                        connection string
 
-Schema.sql                         database schema
-SeedData.sql                          sample data (idempotent)
-Database/Eurocycles-BikeSpec.bak      full DB backup (schema + sample data)
+Database/
+├── Schema.sql                       database schema
+├── SeedData.sql                     sample data (idempotent)
+└── Eurocycles-BikeSpec.bak          full DB backup (schema + sample data)
 ```
 
 ## Architecture notes

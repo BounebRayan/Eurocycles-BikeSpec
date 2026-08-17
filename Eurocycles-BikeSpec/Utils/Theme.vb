@@ -1,7 +1,6 @@
 Imports System.IO
 Imports System.Linq
 Imports System.Reflection
-Imports System.Runtime.InteropServices
 
 ''' <summary>
 ''' Central color/typography palette for the Eurocycles brand (navy/yellow).
@@ -152,17 +151,42 @@ Public Module Theme
         textBox.Font = BodyFont
     End Sub
 
-    Private Const EM_SETCUEBANNER As Integer = &H1501
+    ''' <summary>Wires up placeholder/hint behavior on a TextBox: gray placeholder text when
+    ''' empty and not focused, cleared to real (black) input on focus. The native Windows
+    ''' cue-banner (EM_SETCUEBANNER) would be simpler, but it silently does nothing on a
+    ''' Multiline TextBox - which txtSearch needs to be, to match the search buttons' height -
+    ''' so this manual show/hide approach is used instead. Call only once per TextBox (e.g. in
+    ''' Form_Load); use ShowPlaceholderIfEmpty afterwards (e.g. after a manual .Clear()) rather
+    ''' than calling this again, which would stack duplicate event handlers.</summary>
+    Public Sub ApplyPlaceholder(textBox As TextBox, hintText As String)
+        AddHandler textBox.Enter, Sub(sender As Object, e As EventArgs) HidePlaceholder(textBox)
+        AddHandler textBox.Leave, Sub(sender As Object, e As EventArgs) ShowPlaceholderIfEmpty(textBox, hintText)
 
-    <DllImport("user32.dll", CharSet:=CharSet.Unicode)>
-    Private Function SendMessage(hWnd As IntPtr, msg As Integer, wParam As IntPtr, lParam As String) As IntPtr
-    End Function
-
-    ''' <summary>Shows placeholder/hint text in an empty, unfocused TextBox via the native
-    ''' Windows cue-banner (no fake-text-swap hack, no extra library).</summary>
-    Public Sub ApplyPlaceholder(textBox As TextBox, placeholderText As String)
-        SendMessage(textBox.Handle, EM_SETCUEBANNER, IntPtr.Zero, placeholderText)
+        ShowPlaceholderIfEmpty(textBox, hintText)
     End Sub
+
+    ''' <summary>Re-shows the placeholder if the box is now empty and unfocused - needed after
+    ''' code clears a TextBox's Text directly (e.g. a "Réinitialiser" button), since that
+    ''' doesn't raise Leave.</summary>
+    Public Sub ShowPlaceholderIfEmpty(textBox As TextBox, hintText As String)
+        If textBox.Text.Length = 0 AndAlso Not textBox.Focused Then
+            textBox.Text = hintText
+            textBox.ForeColor = PlaceholderText
+        End If
+    End Sub
+
+    Private Sub HidePlaceholder(textBox As TextBox)
+        If textBox.ForeColor = PlaceholderText Then
+            textBox.Text = String.Empty
+            textBox.ForeColor = Color.Black
+        End If
+    End Sub
+
+    ''' <summary>Returns a TextBox's real typed text, or an empty string if it's currently
+    ''' showing its ApplyPlaceholder hint text (so callers never treat the hint as real input).</summary>
+    Public Function GetRealText(textBox As TextBox) As String
+        Return If(textBox.ForeColor = PlaceholderText, String.Empty, textBox.Text)
+    End Function
 
     ''' <summary>Loads the embedded Eurocycles logo. Returns Nothing (never throws) if it can't be read.</summary>
     Public Function LoadLogo() As Image

@@ -1,5 +1,7 @@
 Public Class FormListe
 
+    Private Const SearchPlaceholder As String = "Rechercher : code, nom, marque…"
+
     Private ReadOnly _repository As New NomenclatureRepository()
 
     ' --- Single-window navigation state -----------------------------------------------------
@@ -14,7 +16,7 @@ Public Class FormListe
     Private _suspendedEditSubtitle As String
 
     Private Sub FormListe_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-        Theme.ApplyPlaceholder(txtSearch, "Rechercher : code, nom, marque…")
+        Theme.ApplyPlaceholder(txtSearch, SearchPlaceholder)
         dgvNomenclatures.DataSource = bsNomenclatures
         LoadAll()
     End Sub
@@ -30,7 +32,7 @@ Public Class FormListe
     End Sub
 
     Private Sub PerformSearch()
-        Dim term = txtSearch.Text.Trim()
+        Dim term = Theme.GetRealText(txtSearch).Trim()
         Try
             Dim list = If(term.Length = 0, _repository.GetAll(), _repository.Search(term))
             bsNomenclatures.DataSource = list
@@ -63,6 +65,7 @@ Public Class FormListe
 
     Private Sub btnActualiser_Click(sender As Object, e As EventArgs) Handles btnActualiser.Click
         txtSearch.Clear()
+        Theme.ShowPlaceholderIfEmpty(txtSearch, SearchPlaceholder)
         LoadAll()
     End Sub
 
