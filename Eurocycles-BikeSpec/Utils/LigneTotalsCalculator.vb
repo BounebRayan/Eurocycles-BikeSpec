@@ -15,14 +15,14 @@ Public Module LigneTotalsCalculator
             ToList()
     End Function
 
-    ''' <summary>Formats totals as e.g. "Total: 125.500 Euro, 40.000 USD", or a placeholder when empty.
-    ''' Uses 3 decimals uniformly (matching Prix's DECIMAL(10,3) scale) rather than varying by
-    ''' currency, since decimal precision is a schema property, not a per-currency one.</summary>
+    ''' <summary>Formats totals as e.g. "Total : 125.500 Euro · 40.000 USD" (matches the design
+    ''' handoff mockup), or a placeholder when empty. Uses 3 decimals uniformly (matching Prix's
+    ''' DECIMAL(10,3) scale) rather than varying by currency.</summary>
     Public Function FormatTotals(lines As IEnumerable(Of LigneNomenclature)) As String
         Dim totals = ComputeTotals(lines)
         If totals.Count = 0 Then Return "Aucune ligne."
 
-        Return "Total: " & String.Join(", ", totals.Select(Function(t) $"{t.Total:N3} {t.Devise}"))
+        Return "Total : " & String.Join(" · ", totals.Select(Function(t) $"{t.Total:N3} {t.Devise}"))
     End Function
 
 End Module

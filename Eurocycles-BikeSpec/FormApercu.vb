@@ -18,6 +18,7 @@ Public Class FormApercu
         _nomenclature = nomenclature
         _lignes = If(lignes, New List(Of LigneNomenclature)())
         Me.Text = $"Aperçu - {nomenclature.Code}"
+        lblHeaderSubtitle.Text = $"Aperçu — {nomenclature.Code}"
     End Sub
 
     Private Sub FormApercu_Load(sender As Object, e As EventArgs) Handles MyBase.Load
@@ -48,6 +49,15 @@ Public Class FormApercu
 
     Private Sub btnFermer_Click(sender As Object, e As EventArgs) Handles btnFermer.Click
         Me.Close()
+    End Sub
+
+    Private Sub btnModifier_Click(sender As Object, e As EventArgs) Handles btnModifier.Click
+        Using form As New FormNomenclature(_nomenclature)
+            If form.ShowDialog(Me) = DialogResult.OK Then
+                ' The record just changed under us - close rather than show stale data.
+                Me.Close()
+            End If
+        End Using
     End Sub
 
     Private Sub btnImprimer_Click(sender As Object, e As EventArgs) Handles btnImprimer.Click

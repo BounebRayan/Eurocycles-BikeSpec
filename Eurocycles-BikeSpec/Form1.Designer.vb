@@ -198,10 +198,11 @@ Partial Class Form1
         Me.BackColor = Theme.CardBackground
         Me.ClientSize = New Size(1040, 700)
         Me.Text = "Eurocycles BikeSpec - Nomenclatures"
+        Dim unusedHeaderLabel As Label = Nothing
         Me.Controls.Add(Me.dgvNomenclatures)
         Me.Controls.Add(Me.pnlBottom)
         Me.Controls.Add(Me.pnlTop)
-        Me.Controls.Add(Theme.BuildHeaderStrip("BikeSpec — Nomenclatures"))
+        Me.Controls.Add(Theme.BuildHeaderStrip("BikeSpec — Nomenclatures", unusedHeaderLabel))
 
         CType(Me.bsNomenclatures, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.dgvNomenclatures, System.ComponentModel.ISupportInitialize).EndInit()

@@ -118,6 +118,29 @@ Public Module Theme
         panel.BorderStyle = BorderStyle.FixedSingle
     End Sub
 
+    ''' <summary>Places a caption Label above an input control at a fixed position within a
+    ''' card, sized to the given width. Shared by FormNomenclature (editable fields) and
+    ''' FormApercu (read-only fields) so both position/space fields identically. Returns the
+    ''' Y to use for the next field.</summary>
+    Public Function AddField(parent As Panel, label As Label, caption As String, inputControl As Control,
+                              x As Integer, y As Integer, width As Integer) As Integer
+        label.Text = caption
+        label.AutoSize = True
+        label.Location = New Point(x, y)
+        ApplyFieldLabel(label)
+        parent.Controls.Add(label)
+
+        inputControl.Location = New Point(x, y + 18)
+        inputControl.Width = width
+        inputControl.Font = BodyFont
+        If TypeOf inputControl Is TextBox Then
+            DirectCast(inputControl, TextBox).BorderStyle = BorderStyle.FixedSingle
+        End If
+        parent.Controls.Add(inputControl)
+
+        Return y + 18 + inputControl.Height + 14
+    End Function
+
     ''' <summary>Read-only "value" field on the Aperçu screen: light gray fill, thin border.</summary>
     Public Sub ApplyReadOnlyField(textBox As TextBox)
         textBox.ReadOnly = True
@@ -157,8 +180,10 @@ Public Module Theme
         End Try
     End Function
 
-    ''' <summary>Builds the navy branding strip (logo + subtitle) shown at the top of every screen.</summary>
-    Public Function BuildHeaderStrip(subtitle As String) As Panel
+    ''' <summary>Builds the navy branding strip (logo + subtitle) shown at the top of every screen.
+    ''' subtitleLabel is returned so callers whose title changes at runtime (e.g. New vs Edit
+    ''' mode) can update its Text later without rebuilding the whole strip.</summary>
+    Public Function BuildHeaderStrip(subtitle As String, ByRef subtitleLabel As Label) As Panel
         Dim strip As New Panel With {
             .Dock = DockStyle.Top,
             .Height = 44,
@@ -178,7 +203,7 @@ Public Module Theme
             strip.Controls.Add(pic)
         End If
 
-        Dim label As New Label With {
+        subtitleLabel = New Label With {
             .Text = subtitle,
             .ForeColor = HeaderSubtitle,
             .Font = New Font("Segoe UI", 9.5F, FontStyle.Regular),
@@ -186,7 +211,7 @@ Public Module Theme
             .Location = New Point(If(logo IsNot Nothing, 122, 18), 14),
             .BackColor = Color.Transparent
         }
-        strip.Controls.Add(label)
+        strip.Controls.Add(subtitleLabel)
 
         Return strip
     End Function

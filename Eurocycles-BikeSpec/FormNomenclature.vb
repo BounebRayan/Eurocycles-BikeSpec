@@ -16,6 +16,7 @@ Public Class FormNomenclature
         _isNewMode = True
         _nomenclature = New Nomenclature With {.Date = DateTime.Today}
         Me.Text = "Nouvelle nomenclature"
+        lblHeaderSubtitle.Text = "Nouvelle nomenclature"
     End Sub
 
     Public Sub New(nomenclature As Nomenclature)
@@ -24,6 +25,7 @@ Public Class FormNomenclature
         _isNewMode = False
         _nomenclature = CloneNomenclature(nomenclature)
         Me.Text = $"Modifier nomenclature - {nomenclature.Code}"
+        lblHeaderSubtitle.Text = $"Modifier nomenclature — {nomenclature.Code}"
     End Sub
 
     Private Shared Function CloneNomenclature(source As Nomenclature) As Nomenclature
