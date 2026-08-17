@@ -11,7 +11,7 @@ Public Class FormNomenclature
     Private _lignes As BindingList(Of LigneNomenclature)
     Private _isDirty As Boolean
 
-    ''' <summary>Raised when the user clicks Aperçu: the host (Form1) is responsible for
+    ''' <summary>Raised when the user clicks Aperçu: the host (FormListe) is responsible for
     ''' building/showing the preview - this form is only ever embedded, never opens another
     ''' top-level window itself.</summary>
     Public Event PreviewRequested As EventHandler
@@ -377,7 +377,7 @@ Public Class FormNomenclature
     End Sub
 
     ''' <summary>Builds an up-to-date snapshot from whatever is currently entered (even if not
-    ''' yet saved) for the host to hand to FormApercu. Public because Form1 calls it in response
+    ''' yet saved) for the host to hand to FormApercu. Public because FormListe calls it in response
     ''' to PreviewRequested; this form never creates FormApercu itself.</summary>
     Public Function BuildPreviewSnapshot() As Nomenclature
         dgvLignes.EndEdit()

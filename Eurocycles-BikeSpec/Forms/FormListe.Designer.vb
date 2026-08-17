@@ -1,5 +1,5 @@
 <Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()>
-Partial Class Form1
+Partial Class FormListe
     Inherits System.Windows.Forms.Form
 
     'Form overrides dispose to clean up the component list.
@@ -224,12 +224,12 @@ Partial Class Form1
         Me.pnlListView.Controls.Add(Me.pnlTop)
 
         ' pnlContent - hosts an embedded FormNomenclature/FormApercu in place of the list view.
-        ' Hidden until Form1.vb's navigation code embeds something into it.
+        ' Hidden until FormListe.vb's navigation code embeds something into it.
         Me.pnlContent.Dock = DockStyle.Fill
         Me.pnlContent.Visible = False
         Me.pnlContent.BackColor = Theme.CardBackground
 
-        ' Form1
+        ' FormListe
         Me.AutoScaleMode = AutoScaleMode.Font
         Me.BackColor = Theme.CardBackground
         Me.ClientSize = New Size(1040, 700)

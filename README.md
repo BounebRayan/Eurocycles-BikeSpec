@@ -34,11 +34,11 @@ Or in SQL Server Management Studio / Azure Data Studio: connect to
 ### Option B — build it from scratch
 
 ```powershell
-sqlcmd -S "(localdb)\MSSQLLocalDB" -i SQLQuery1.sql
+sqlcmd -S "(localdb)\MSSQLLocalDB" -i Schema.sql
 sqlcmd -S "(localdb)\MSSQLLocalDB" -i SeedData.sql   # optional sample data
 ```
 
-`SQLQuery1.sql` creates the schema (`Nomenclature`, `LigneNomenclature`,
+`Schema.sql` creates the schema (`Nomenclature`, `LigneNomenclature`,
 constraints, indexes). `SeedData.sql` is idempotent — safe to re-run any time
 you want to reset back to the sample rows (it deletes existing rows first).
 
@@ -80,12 +80,13 @@ Eurocycles-BikeSpec/                  the app project
 │   ├── NullableConverter.vb          blank-string <-> Nothing conversions
 │   └── PhotoHelper.vb                safe image decode (never throws on bad data)
 ├── Assets/                           embedded logo resource
-├── Form1                             list/search screen (the only top-level window)
-├── FormNomenclature                  create/edit screen
-├── FormApercu                        read-only preview + print screen
+├── Forms/
+│   ├── FormListe                     list/search screen (the only top-level window)
+│   ├── FormNomenclature              create/edit screen
+│   └── FormApercu                    read-only preview + print screen
 └── App.config                        connection string
 
-SQLQuery1.sql                         database schema
+Schema.sql                         database schema
 SeedData.sql                          sample data (idempotent)
 Database/Eurocycles-BikeSpec.bak      full DB backup (schema + sample data)
 ```
@@ -96,7 +97,7 @@ Database/Eurocycles-BikeSpec.bak      full DB backup (schema + sample data)
   SQL, no ORM). `NomenclatureRepository.Insert`/`Update` write the header and
   all of its BOM lines inside a single `SqlTransaction`, so the two tables
   never end up out of sync with each other.
-- **Single-window navigation**: `Form1` is the only real top-level window.
+- **Single-window navigation**: `FormListe` is the only real top-level window.
   `FormNomenclature` and `FormApercu` are embedded into it (not shown as
   separate windows), so New/Edit/Aperçu swap the window's content in place
   instead of opening more windows. Navigating from Edit to its Aperçu preview

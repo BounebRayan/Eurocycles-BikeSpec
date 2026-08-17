@@ -5,7 +5,7 @@ Imports System.Runtime.InteropServices
 
 ''' <summary>
 ''' Central color/typography palette for the Eurocycles brand (navy/yellow).
-''' Keeps styling consistent across Form1, FormNomenclature, and FormApercu
+''' Keeps styling consistent across FormListe, FormNomenclature, and FormApercu
 ''' without duplicating hex values or re-deriving the same control styling
 ''' in three places.
 ''' </summary>

@@ -211,7 +211,7 @@ Partial Class FormApercu
             colDesignation, colQuantite, colPrix, colFabricant, colImprime, colDevise, colObservation
         })
 
-        ' pnlBottom (footer: total text left, action buttons right - one row, matching Form1)
+        ' pnlBottom (footer: total text left, action buttons right - one row, matching FormListe)
         Me.pnlBottom.Dock = DockStyle.Bottom
         Me.pnlBottom.Height = 58
         Me.pnlBottom.BackColor = Theme.CardBackground
@@ -250,7 +250,7 @@ Partial Class FormApercu
         Me.pnlBottomButtons.Controls.Add(Me.btnModifier)
 
         ' FormApercu
-        ' Note: only ever shown embedded inside Form1's content panel - see FormNomenclature's
+        ' Note: only ever shown embedded inside FormListe's content panel - see FormNomenclature's
         ' equivalent comment.
         Me.AutoScaleMode = AutoScaleMode.Font
         Me.BackColor = Theme.CardBackground

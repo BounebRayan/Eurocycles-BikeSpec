@@ -1,4 +1,4 @@
-Public Class Form1
+Public Class FormListe
 
     Private ReadOnly _repository As New NomenclatureRepository()
 
@@ -13,7 +13,7 @@ Public Class Form1
     Private _suspendedEditForm As FormNomenclature
     Private _suspendedEditSubtitle As String
 
-    Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+    Private Sub FormListe_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         Theme.ApplyPlaceholder(txtSearch, "Rechercher : code, nom, marque…")
         dgvNomenclatures.DataSource = bsNomenclatures
         LoadAll()

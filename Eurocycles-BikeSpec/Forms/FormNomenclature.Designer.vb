@@ -258,7 +258,7 @@ Partial Class FormNomenclature
             colCode, colDesignation, colQuantite, colPrix, colFabricant, colImprime, colObservation, colDevise
         })
 
-        ' pnlBottom (footer: total text left, action buttons right - one row, matching Form1)
+        ' pnlBottom (footer: total text left, action buttons right - one row, matching FormListe)
         Me.pnlBottom.Dock = DockStyle.Bottom
         Me.pnlBottom.Height = 58
         Me.pnlBottom.BackColor = Theme.CardBackground
@@ -298,9 +298,9 @@ Partial Class FormNomenclature
         Me.pnlBottomButtons.Controls.Add(Me.btnApercu)
 
         ' FormNomenclature
-        ' Note: this form is only ever shown embedded inside Form1's content panel (never as its
+        ' Note: this form is only ever shown embedded inside FormListe's content panel (never as its
         ' own top-level window), so FormBorderStyle/StartPosition/AcceptButton/CancelButton are
-        ' intentionally not set here - Form1 owns the single navy header strip and the window
+        ' intentionally not set here - FormListe owns the single navy header strip and the window
         ' chrome; embedding overrides FormBorderStyle/TopLevel/Dock at the point of embedding.
         Me.AutoScaleMode = AutoScaleMode.Font
         Me.BackColor = Theme.CardBackground

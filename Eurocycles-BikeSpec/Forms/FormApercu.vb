@@ -12,7 +12,7 @@ Public Class FormApercu
     Private WithEvents _printDocument As New PrintDocument()
     Private _printLineIndex As Integer
 
-    ''' <summary>The record being previewed - exposed so the host (Form1) can open an editor
+    ''' <summary>The record being previewed - exposed so the host (FormListe) can open an editor
     ''' for it when Modifier is clicked without this form needing to know about FormNomenclature.</summary>
     Public ReadOnly Property Nomenclature As Nomenclature
         Get
