@@ -208,7 +208,7 @@ Partial Class FormApercu
         }
 
         Me.dgvLignes.Columns.AddRange(New DataGridViewColumn() {
-            colDesignation, colQuantite, colPrix, colFabricant, colImprime, colDevise, colObservation
+            colDesignation, colQuantite, colPrix, colDevise, colFabricant, colImprime, colObservation
         })
 
         ' pnlBottom (footer: total text left, action buttons right - one row, matching FormListe)

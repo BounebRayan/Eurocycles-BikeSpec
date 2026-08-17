@@ -178,8 +178,8 @@ Public Class FormApercu
     End Function
 
     Private Function BuildColumnLayout(left As Single, totalWidth As Integer) As List(Of (Header As String, X As Single, Width As Single))
-        Dim headers = New String() {"Désignation", "Qté", "Prix", "Fabricant", "Imprimé", "Devise", "Observation"}
-        Dim weights = New Single() {0.26F, 0.09F, 0.11F, 0.16F, 0.08F, 0.08F, 0.22F}
+        Dim headers = New String() {"Désignation", "Qté", "Prix", "Devise", "Fabricant", "Imprimé", "Observation"}
+        Dim weights = New Single() {0.26F, 0.09F, 0.11F, 0.08F, 0.16F, 0.08F, 0.22F}
 
         Dim result As New List(Of (Header As String, X As Single, Width As Single))
         Dim x = left
@@ -202,9 +202,9 @@ Public Class FormApercu
                 line.Designation,
                 line.Quantite.ToString("N2"),
                 line.Prix.ToString("N3"),
+                line.Devise,
                 NullableConverter.FormatOrDash(line.Fabricant),
                 If(line.Imprime, "Oui", "Non"),
-                line.Devise,
                 NullableConverter.FormatOrDash(line.Observation)
             }
         End If

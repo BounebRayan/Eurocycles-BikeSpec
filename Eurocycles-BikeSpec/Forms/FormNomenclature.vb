@@ -21,6 +21,7 @@ Public Class FormNomenclature
         _isNewMode = True
         _nomenclature = New Nomenclature With {.Date = DateTime.Today}
         Me.Text = "Nouvelle nomenclature"
+        btnApercu.Visible = False ' nothing meaningful to preview before the record exists
     End Sub
 
     Public Sub New(nomenclature As Nomenclature)

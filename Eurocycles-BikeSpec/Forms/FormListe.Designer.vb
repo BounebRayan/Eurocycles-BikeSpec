@@ -38,6 +38,7 @@ Partial Class FormListe
         Me.pnlListView = New Panel()
         Me.pnlTop = New Panel()
         Me.pnlSearchGroup = New FlowLayoutPanel()
+        Me.pnlSearchInputBox = New Panel()
         Me.txtSearch = New TextBox()
         Me.btnSearch = New Button()
         Me.btnActualiser = New Button()
@@ -78,19 +79,26 @@ Partial Class FormListe
         Me.pnlSearchGroup.AutoSize = True
         Me.pnlSearchGroup.WrapContents = False
         Me.pnlSearchGroup.FlowDirection = FlowDirection.LeftToRight
-        Me.pnlSearchGroup.Controls.Add(Me.txtSearch)
+        Me.pnlSearchGroup.Controls.Add(Me.pnlSearchInputBox)
         Me.pnlSearchGroup.Controls.Add(Me.btnSearch)
         Me.pnlSearchGroup.Controls.Add(Me.btnActualiser)
 
-        ' txtSearch - Multiline so the explicit Height is honored (WinForms clamps a
-        ' single-line TextBox's height to its font, ignoring Height otherwise), so it can
-        ' match the buttons' height exactly. KeyDown already suppresses Enter's newline.
-        Me.txtSearch.Multiline = True
-        Me.txtSearch.Width = 380
-        Me.txtSearch.Height = 30
+        ' pnlSearchInputBox - a single-line TextBox always vertically centers its own text and
+        ' always sizes itself to its font's natural height, ignoring any taller Height you set
+        ' (that's why an earlier attempt used Multiline=True to force a taller box - which then
+        ' broke vertical centering, since Multiline text top-aligns instead). This wrapper draws
+        ' the 30px-tall bordered box matching the buttons, with the single-line, auto-height,
+        ' natively-centered TextBox positioned inside it.
+        Me.pnlSearchInputBox.Size = New Size(380, 30)
+        Me.pnlSearchInputBox.BorderStyle = BorderStyle.FixedSingle
+        Me.pnlSearchInputBox.Margin = New Padding(0, 0, 12, 0)
+        Me.pnlSearchInputBox.Controls.Add(Me.txtSearch)
+
+        ' txtSearch
+        Me.txtSearch.BorderStyle = BorderStyle.None
         Me.txtSearch.Font = Theme.BodyFont
-        Me.txtSearch.BorderStyle = BorderStyle.FixedSingle
-        Me.txtSearch.Margin = New Padding(0, 0, 12, 0)
+        Me.txtSearch.Width = 372
+        Me.txtSearch.Location = New Point(4, (28 - Me.txtSearch.PreferredHeight) \ 2)
 
         ' btnSearch
         Me.btnSearch.AutoSize = True
@@ -246,7 +254,7 @@ Partial Class FormListe
         Me.Text = "Eurocycles BikeSpec" ' the OS window/taskbar title stays constant regardless of screen
         Me.Controls.Add(Me.pnlContent)
         Me.Controls.Add(Me.pnlListView)
-        Me.Controls.Add(Theme.BuildHeaderStrip("BikeSpec » Nomenclatures", Me.lblHeaderSubtitle))
+        Me.Controls.Add(Theme.BuildHeaderStrip("BikeSpec » Liste des nomenclatures", Me.lblHeaderSubtitle))
 
         CType(Me.bsNomenclatures, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.dgvNomenclatures, System.ComponentModel.ISupportInitialize).EndInit()
@@ -268,6 +276,7 @@ Partial Class FormListe
     Friend WithEvents pnlListView As Panel
     Friend WithEvents pnlTop As Panel
     Friend WithEvents pnlSearchGroup As FlowLayoutPanel
+    Friend WithEvents pnlSearchInputBox As Panel
     Friend WithEvents txtSearch As TextBox
     Friend WithEvents btnSearch As Button
     Friend WithEvents btnActualiser As Button

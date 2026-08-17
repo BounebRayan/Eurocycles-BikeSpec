@@ -114,7 +114,7 @@ Public Class FormListe
         _suspendedEditForm = Nothing
         pnlContent.Visible = False
         pnlListView.Visible = True
-        lblHeaderSubtitle.Text = "BikeSpec » Nomenclatures"
+        lblHeaderSubtitle.Text = "BikeSpec » Liste des nomenclatures"
     End Sub
 
     ''' <summary>Embeds childForm into pnlContent in place of whatever is currently shown.</summary>
@@ -161,10 +161,10 @@ Public Class FormListe
         Dim subtitle As String
         If nomenclature Is Nothing Then
             editForm = New FormNomenclature()
-            subtitle = "Nouvelle nomenclature"
+            subtitle = "BikeSpec » Nouvelle nomenclature"
         Else
             editForm = New FormNomenclature(nomenclature)
-            subtitle = $"Modifier nomenclature » {nomenclature.Code}"
+            subtitle = $"BikeSpec » Modifier · {nomenclature.Code}"
         End If
 
         AddHandler editForm.FormClosed, AddressOf EditForm_FormClosed
@@ -219,7 +219,7 @@ Public Class FormListe
         AddHandler previewForm.FormClosed, AddressOf PreviewForm_FormClosed
         AddHandler previewForm.ModifierRequested, AddressOf PreviewForm_ModifierRequested
 
-        ShowEmbedded(previewForm, $"Aperçu » {nomenclature.Code}")
+        ShowEmbedded(previewForm, $"BikeSpec » Aperçu · {nomenclature.Code}")
     End Sub
 
     Private Sub PreviewForm_FormClosed(sender As Object, e As FormClosedEventArgs)

@@ -255,7 +255,7 @@ Partial Class FormNomenclature
         colDevise.Items.AddRange(AllowedValues.Devises)
 
         Me.dgvLignes.Columns.AddRange(New DataGridViewColumn() {
-            colCode, colDesignation, colQuantite, colPrix, colFabricant, colImprime, colObservation, colDevise
+            colCode, colDesignation, colQuantite, colPrix, colDevise, colFabricant, colImprime, colObservation
         })
 
         ' pnlBottom (footer: total text left, action buttons right - one row, matching FormListe)
