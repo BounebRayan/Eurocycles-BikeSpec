@@ -9,6 +9,7 @@ Public Class FormNomenclature
     Private ReadOnly _ligneRepository As New LigneNomenclatureRepository()
     Private ReadOnly _editorService As New NomenclatureEditorService()
     Private _originalLineCodes As List(Of String)
+    Private _isDirty As Boolean
 
     Public Sub New()
         InitializeComponent()
@@ -64,6 +65,29 @@ Public Class FormNomenclature
         bsLignes.DataSource = lines
         dgvLignes.DataSource = bsLignes
         RefreshTotals()
+
+        ' Wired after PopulateForm()/lines are bound so initial population never marks the form dirty.
+        WireDirtyTracking()
+    End Sub
+
+    ''' <summary>
+    ''' Marks the form dirty on any header-field edit, so FormClosing can warn before
+    ''' discarding unsaved changes. Line/photo edits mark it dirty at their own call sites.
+    ''' </summary>
+    Private Sub WireDirtyTracking()
+        For Each ctrl As Control In New Control() {
+            txtCode, txtNom, txtMarque, txtGenCode, txtNW, txtGW, txtModele, txtRefCustomer, txtCouleur
+        }
+            AddHandler ctrl.TextChanged, AddressOf MarkDirty
+        Next
+        AddHandler dtpDate.ValueChanged, AddressOf MarkDirty
+        AddHandler cboFrameSize.SelectedIndexChanged, AddressOf MarkDirty
+        AddHandler cboWheelSize.SelectedIndexChanged, AddressOf MarkDirty
+        AddHandler cboTypeDecor.SelectedIndexChanged, AddressOf MarkDirty
+    End Sub
+
+    Private Sub MarkDirty(sender As Object, e As EventArgs)
+        _isDirty = True
     End Sub
 
     Private Sub RefreshTotals()
@@ -71,7 +95,23 @@ Public Class FormNomenclature
     End Sub
 
     Private Sub dgvLignes_CellEndEdit(sender As Object, e As DataGridViewCellEventArgs) Handles dgvLignes.CellEndEdit
+        _isDirty = True
         RefreshTotals()
+    End Sub
+
+    Private Sub FormNomenclature_FormClosing(sender As Object, e As FormClosingEventArgs) Handles Me.FormClosing
+        If Me.DialogResult = DialogResult.OK Then Return ' saved successfully, nothing to warn about
+        If Not _isDirty Then Return
+
+        Dim confirm = MessageBox.Show(
+            "Des modifications n'ont pas été enregistrées. Voulez-vous vraiment fermer sans enregistrer ?",
+            "Confirmation",
+            MessageBoxButtons.YesNo,
+            MessageBoxIcon.Warning)
+
+        If confirm <> DialogResult.Yes Then
+            e.Cancel = True
+        End If
     End Sub
 
     Private Sub PopulateForm()
@@ -125,12 +165,14 @@ Public Class FormNomenclature
 
             _nomenclature.Photo = bytes
             UpdatePhotoPreview()
+            _isDirty = True
         End Using
     End Sub
 
     Private Sub btnSupprimerPhoto_Click(sender As Object, e As EventArgs) Handles btnSupprimerPhoto.Click
         _nomenclature.Photo = Nothing
         UpdatePhotoPreview()
+        _isDirty = True
     End Sub
 
     Private Sub btnAjouterLigne_Click(sender As Object, e As EventArgs) Handles btnAjouterLigne.Click
@@ -146,6 +188,7 @@ Public Class FormNomenclature
         bsLignes.Add(newLine)
         dgvLignes.CurrentCell = dgvLignes.Rows(dgvLignes.Rows.Count - 1).Cells("colDesignation")
         dgvLignes.BeginEdit(True)
+        _isDirty = True
         RefreshTotals()
     End Sub
 
@@ -153,6 +196,7 @@ Public Class FormNomenclature
         Dim line = TryCast(dgvLignes.CurrentRow?.DataBoundItem, LigneNomenclature)
         If line Is Nothing Then Return
         bsLignes.Remove(line)
+        _isDirty = True
         RefreshTotals()
     End Sub
 

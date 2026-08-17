@@ -10,7 +10,9 @@ Public Class Form1
 
     Private Sub LoadAll()
         Try
-            bsNomenclatures.DataSource = _repository.GetAll()
+            Dim list = _repository.GetAll()
+            bsNomenclatures.DataSource = list
+            UpdateStatus(list.Count)
         Catch ex As DataAccessException
             ShowDataError(ex)
         End Try
@@ -19,10 +21,22 @@ Public Class Form1
     Private Sub PerformSearch()
         Dim term = txtSearch.Text.Trim()
         Try
-            bsNomenclatures.DataSource = If(term.Length = 0, _repository.GetAll(), _repository.Search(term))
+            Dim list = If(term.Length = 0, _repository.GetAll(), _repository.Search(term))
+            bsNomenclatures.DataSource = list
+            UpdateStatus(list.Count)
         Catch ex As DataAccessException
             ShowDataError(ex)
         End Try
+    End Sub
+
+    Private Sub UpdateStatus(count As Integer)
+        If count = 0 Then
+            lblStatusCount.Text = "Aucune nomenclature trouvée."
+        ElseIf count = 1 Then
+            lblStatusCount.Text = "1 nomenclature trouvée."
+        Else
+            lblStatusCount.Text = $"{count} nomenclatures trouvées."
+        End If
     End Sub
 
     Private Sub btnSearch_Click(sender As Object, e As EventArgs) Handles btnSearch.Click
@@ -95,8 +109,13 @@ Public Class Form1
         If selected Is Nothing Then Return
 
         Try
+            ' The grid row only carries header fields — fetch the full, current record
+            ' (and its lines separately, since Nomenclature doesn't embed them) before previewing.
+            Dim nomenclature = _repository.GetByCode(selected.Code)
+            If nomenclature Is Nothing Then nomenclature = selected
+
             Dim lines = _ligneRepository.GetByNomenclatureCode(selected.Code)
-            Using form As New FormApercu(selected, lines)
+            Using form As New FormApercu(nomenclature, lines)
                 form.ShowDialog(Me)
             End Using
         Catch ex As DataAccessException

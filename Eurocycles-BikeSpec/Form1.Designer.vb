@@ -45,6 +45,8 @@ Partial Class Form1
         Me.btnModifier = New Button()
         Me.btnSupprimer = New Button()
         Me.btnApercu = New Button()
+        Me.ssStatus = New StatusStrip()
+        Me.lblStatusCount = New ToolStripStatusLabel()
 
         CType(Me.bsNomenclatures, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.dgvNomenclatures, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -165,12 +167,18 @@ Partial Class Form1
         Me.btnApercu.Enabled = False
         Me.btnApercu.Margin = New Padding(3)
 
+        ' ssStatus
+        Me.ssStatus.Dock = DockStyle.Bottom
+        Me.lblStatusCount.Text = String.Empty
+        Me.ssStatus.Items.Add(Me.lblStatusCount)
+
         ' Form1
         Me.AutoScaleMode = AutoScaleMode.Font
         Me.ClientSize = New Size(1000, 600)
         Me.Text = "Eurocycles BikeSpec - Nomenclatures"
         Me.Controls.Add(Me.dgvNomenclatures)
         Me.Controls.Add(Me.pnlBottom)
+        Me.Controls.Add(Me.ssStatus)
         Me.Controls.Add(Me.pnlTop)
 
         CType(Me.bsNomenclatures, System.ComponentModel.ISupportInitialize).EndInit()
@@ -193,5 +201,7 @@ Partial Class Form1
     Friend WithEvents btnModifier As Button
     Friend WithEvents btnSupprimer As Button
     Friend WithEvents btnApercu As Button
+    Friend WithEvents ssStatus As StatusStrip
+    Friend WithEvents lblStatusCount As ToolStripStatusLabel
 
 End Class
