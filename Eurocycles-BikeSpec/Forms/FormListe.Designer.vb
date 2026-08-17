@@ -41,6 +41,7 @@ Partial Class FormListe
         Me.txtSearch = New TextBox()
         Me.btnSearch = New Button()
         Me.btnActualiser = New Button()
+        Me.pnlNouveauGroup = New FlowLayoutPanel()
         Me.btnNouveau = New Button()
         Me.pnlGridContainer = New Panel()
         Me.dgvNomenclatures = New DataGridView()
@@ -58,6 +59,7 @@ Partial Class FormListe
         Me.pnlListView.SuspendLayout()
         Me.pnlTop.SuspendLayout()
         Me.pnlSearchGroup.SuspendLayout()
+        Me.pnlNouveauGroup.SuspendLayout()
         Me.pnlGridContainer.SuspendLayout()
         Me.pnlBottom.SuspendLayout()
         Me.pnlBottomButtons.SuspendLayout()
@@ -68,7 +70,7 @@ Partial Class FormListe
         Me.pnlTop.Height = 64
         Me.pnlTop.BackColor = Theme.CardBackground
         Me.pnlTop.Padding = New Padding(22, 16, 22, 10)
-        Me.pnlTop.Controls.Add(Me.btnNouveau)
+        Me.pnlTop.Controls.Add(Me.pnlNouveauGroup)
         Me.pnlTop.Controls.Add(Me.pnlSearchGroup)
 
         ' pnlSearchGroup
@@ -104,8 +106,16 @@ Partial Class FormListe
         Me.btnActualiser.Margin = New Padding(0)
         Theme.ApplyMutedButton(Me.btnActualiser)
 
-        ' btnNouveau - pinned to the right edge of the search row, independent of the input group
-        Me.btnNouveau.Dock = DockStyle.Right
+        ' pnlNouveauGroup - a Dock=Right control always stretches to fill the parent's full
+        ' height, which would silently override btnNouveau's own Height; wrapping it in a
+        ' FlowLayoutPanel (Dock=Right on the wrapper, not the button) keeps the button itself at
+        ' its true 30px height, matching pnlSearchGroup's controls exactly the same way.
+        Me.pnlNouveauGroup.Dock = DockStyle.Right
+        Me.pnlNouveauGroup.AutoSize = True
+        Me.pnlNouveauGroup.WrapContents = False
+        Me.pnlNouveauGroup.Controls.Add(Me.btnNouveau)
+
+        ' btnNouveau
         Me.btnNouveau.AutoSize = True
         Me.btnNouveau.Height = 30
         Me.btnNouveau.Text = "+ Nouveau"
@@ -242,6 +252,8 @@ Partial Class FormListe
         CType(Me.dgvNomenclatures, System.ComponentModel.ISupportInitialize).EndInit()
         Me.pnlSearchGroup.ResumeLayout(False)
         Me.pnlSearchGroup.PerformLayout()
+        Me.pnlNouveauGroup.ResumeLayout(False)
+        Me.pnlNouveauGroup.PerformLayout()
         Me.pnlTop.ResumeLayout(False)
         Me.pnlGridContainer.ResumeLayout(False)
         Me.pnlBottomButtons.ResumeLayout(False)
@@ -258,8 +270,9 @@ Partial Class FormListe
     Friend WithEvents pnlSearchGroup As FlowLayoutPanel
     Friend WithEvents txtSearch As TextBox
     Friend WithEvents btnSearch As Button
-    Friend WithEvents btnNouveau As Button
     Friend WithEvents btnActualiser As Button
+    Friend WithEvents pnlNouveauGroup As FlowLayoutPanel
+    Friend WithEvents btnNouveau As Button
     Friend WithEvents pnlGridContainer As Panel
     Friend WithEvents dgvNomenclatures As DataGridView
     Friend WithEvents pnlBottom As Panel
