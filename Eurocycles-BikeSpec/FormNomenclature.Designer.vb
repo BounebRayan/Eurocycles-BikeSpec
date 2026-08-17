@@ -61,10 +61,13 @@ Partial Class FormNomenclature
         Me.btnAjouterLigne = New Button()
         Me.btnSupprimerLigne = New Button()
         Me.dgvLignes = New DataGridView()
+        Me.pnlTotaux = New Panel()
+        Me.lblTotaux = New Label()
 
         Me.pnlBottom = New FlowLayoutPanel()
         Me.btnEnregistrer = New Button()
         Me.btnAnnuler = New Button()
+        Me.btnApercu = New Button()
 
         CType(Me.errorProvider, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.bsLignes, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -153,13 +156,15 @@ Partial Class FormNomenclature
         Me.lblFrameSize.TextAlign = ContentAlignment.MiddleLeft
         Me.cboFrameSize.Dock = DockStyle.Fill
         Me.cboFrameSize.DropDownStyle = ComboBoxStyle.DropDownList
-        Me.cboFrameSize.Items.AddRange(New Object() {"", "12", "14", "15", "16", "17"})
+        Me.cboFrameSize.Items.Add("")
+        Me.cboFrameSize.Items.AddRange(AllowedValues.FrameSizes)
         Me.lblWheelSize.Text = "Taille roue"
         Me.lblWheelSize.Dock = DockStyle.Fill
         Me.lblWheelSize.TextAlign = ContentAlignment.MiddleLeft
         Me.cboWheelSize.Dock = DockStyle.Fill
         Me.cboWheelSize.DropDownStyle = ComboBoxStyle.DropDownList
-        Me.cboWheelSize.Items.AddRange(New Object() {"", "12", "14", "16", "18", "20", "24", "27", "29"})
+        Me.cboWheelSize.Items.Add("")
+        Me.cboWheelSize.Items.AddRange(AllowedValues.WheelSizes)
 
         ' Row 5: RefCustomer / Couleur
         Me.lblRefCustomer.Text = "Réf. client"
@@ -179,7 +184,8 @@ Partial Class FormNomenclature
         Me.lblTypeDecor.TextAlign = ContentAlignment.MiddleLeft
         Me.cboTypeDecor.Dock = DockStyle.Fill
         Me.cboTypeDecor.DropDownStyle = ComboBoxStyle.DropDownList
-        Me.cboTypeDecor.Items.AddRange(New Object() {"", "Standard", "Polyester", "Water Transfer"})
+        Me.cboTypeDecor.Items.Add("")
+        Me.cboTypeDecor.Items.AddRange(AllowedValues.TypeDecors)
 
         Me.tlpHeader.Controls.Add(Me.lblCode, 0, 0)
         Me.tlpHeader.Controls.Add(Me.txtCode, 1, 0)
@@ -230,7 +236,17 @@ Partial Class FormNomenclature
         Me.grpLignes.Dock = DockStyle.Fill
         Me.grpLignes.Text = "Lignes de nomenclature"
         Me.grpLignes.Controls.Add(Me.dgvLignes)
+        Me.grpLignes.Controls.Add(Me.pnlTotaux)
         Me.grpLignes.Controls.Add(Me.pnlLignesButtons)
+
+        ' pnlTotaux
+        Me.pnlTotaux.Dock = DockStyle.Bottom
+        Me.pnlTotaux.Height = 28
+        Me.lblTotaux.Dock = DockStyle.Fill
+        Me.lblTotaux.TextAlign = ContentAlignment.MiddleRight
+        Me.lblTotaux.Font = New Font(Me.lblTotaux.Font, FontStyle.Bold)
+        Me.lblTotaux.Padding = New Padding(0, 0, 10, 0)
+        Me.pnlTotaux.Controls.Add(Me.lblTotaux)
 
         ' pnlLignesButtons
         Me.pnlLignesButtons.Dock = DockStyle.Top
@@ -272,7 +288,7 @@ Partial Class FormNomenclature
         Dim colDevise As New DataGridViewComboBoxColumn() With {
             .Name = "colDevise", .HeaderText = "Devise", .DataPropertyName = "Devise", .FillWeight = 10
         }
-        colDevise.Items.AddRange(New Object() {"Euro", "USD", "TND", "YEN"})
+        colDevise.Items.AddRange(AllowedValues.Devises)
         Dim colFabricant As New DataGridViewTextBoxColumn() With {
             .Name = "colFabricant", .HeaderText = "Fabricant", .DataPropertyName = "Fabricant", .FillWeight = 18
         }
@@ -298,8 +314,12 @@ Partial Class FormNomenclature
         Me.btnAnnuler.AutoSize = True
         Me.btnAnnuler.Text = "Annuler"
         Me.btnAnnuler.Margin = New Padding(3)
+        Me.btnApercu.AutoSize = True
+        Me.btnApercu.Text = "Aperçu"
+        Me.btnApercu.Margin = New Padding(3)
         Me.pnlBottom.Controls.Add(Me.btnEnregistrer)
         Me.pnlBottom.Controls.Add(Me.btnAnnuler)
+        Me.pnlBottom.Controls.Add(Me.btnApercu)
 
         ' FormNomenclature
         Me.AutoScaleMode = AutoScaleMode.Font
@@ -368,8 +388,11 @@ Partial Class FormNomenclature
     Friend WithEvents btnAjouterLigne As Button
     Friend WithEvents btnSupprimerLigne As Button
     Friend WithEvents dgvLignes As DataGridView
+    Friend WithEvents pnlTotaux As Panel
+    Friend WithEvents lblTotaux As Label
     Friend WithEvents pnlBottom As FlowLayoutPanel
     Friend WithEvents btnEnregistrer As Button
     Friend WithEvents btnAnnuler As Button
+    Friend WithEvents btnApercu As Button
 
 End Class

@@ -1,6 +1,7 @@
 Public Class Form1
 
     Private ReadOnly _repository As New NomenclatureRepository()
+    Private ReadOnly _ligneRepository As New LigneNomenclatureRepository()
 
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         dgvNomenclatures.DataSource = bsNomenclatures
@@ -90,8 +91,17 @@ Public Class Form1
     End Sub
 
     Private Sub btnApercu_Click(sender As Object, e As EventArgs) Handles btnApercu.Click
-        If SelectedNomenclature() Is Nothing Then Return
-        MessageBox.Show("Aperçu à venir", "Aperçu", MessageBoxButtons.OK, MessageBoxIcon.Information)
+        Dim selected = SelectedNomenclature()
+        If selected Is Nothing Then Return
+
+        Try
+            Dim lines = _ligneRepository.GetByNomenclatureCode(selected.Code)
+            Using form As New FormApercu(selected, lines)
+                form.ShowDialog(Me)
+            End Using
+        Catch ex As DataAccessException
+            ShowDataError(ex)
+        End Try
     End Sub
 
     Private Sub dgvNomenclatures_SelectionChanged(sender As Object, e As EventArgs) Handles dgvNomenclatures.SelectionChanged

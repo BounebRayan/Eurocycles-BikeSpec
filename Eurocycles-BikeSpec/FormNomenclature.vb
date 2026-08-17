@@ -63,6 +63,15 @@ Public Class FormNomenclature
 
         bsLignes.DataSource = lines
         dgvLignes.DataSource = bsLignes
+        RefreshTotals()
+    End Sub
+
+    Private Sub RefreshTotals()
+        lblTotaux.Text = LigneTotalsCalculator.FormatTotals(bsLignes.List.Cast(Of LigneNomenclature)())
+    End Sub
+
+    Private Sub dgvLignes_CellEndEdit(sender As Object, e As DataGridViewCellEventArgs) Handles dgvLignes.CellEndEdit
+        RefreshTotals()
     End Sub
 
     Private Sub PopulateForm()
@@ -88,16 +97,8 @@ Public Class FormNomenclature
 
     Private Sub UpdatePhotoPreview()
         Dim oldImage = picPhoto.Image
-        picPhoto.Image = Nothing
+        picPhoto.Image = PhotoHelper.TryLoadImage(_nomenclature.Photo)
         oldImage?.Dispose()
-
-        If _nomenclature.Photo IsNot Nothing AndAlso _nomenclature.Photo.Length > 0 Then
-            Using ms As New MemoryStream(_nomenclature.Photo)
-                Using loaded = Image.FromStream(ms)
-                    picPhoto.Image = New Bitmap(loaded)
-                End Using
-            End Using
-        End If
     End Sub
 
     Private Sub btnChargerPhoto_Click(sender As Object, e As EventArgs) Handles btnChargerPhoto.Click
@@ -105,10 +106,25 @@ Public Class FormNomenclature
             dialog.Title = "Sélectionner une photo"
             dialog.Filter = "Images (*.png;*.jpg;*.jpeg;*.bmp)|*.png;*.jpg;*.jpeg;*.bmp|Tous les fichiers (*.*)|*.*"
 
-            If dialog.ShowDialog(Me) = DialogResult.OK Then
-                _nomenclature.Photo = File.ReadAllBytes(dialog.FileName)
-                UpdatePhotoPreview()
+            If dialog.ShowDialog(Me) <> DialogResult.OK Then Return
+
+            Dim bytes As Byte()
+            Try
+                bytes = File.ReadAllBytes(dialog.FileName)
+            Catch ex As Exception
+                MessageBox.Show($"Impossible de lire le fichier sélectionné : {ex.Message}",
+                                 "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                Return
+            End Try
+
+            If PhotoHelper.TryLoadImage(bytes) Is Nothing Then
+                MessageBox.Show("Le fichier sélectionné n'est pas une image valide.",
+                                 "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                Return
             End If
+
+            _nomenclature.Photo = bytes
+            UpdatePhotoPreview()
         End Using
     End Sub
 
@@ -130,12 +146,14 @@ Public Class FormNomenclature
         bsLignes.Add(newLine)
         dgvLignes.CurrentCell = dgvLignes.Rows(dgvLignes.Rows.Count - 1).Cells("colDesignation")
         dgvLignes.BeginEdit(True)
+        RefreshTotals()
     End Sub
 
     Private Sub btnSupprimerLigne_Click(sender As Object, e As EventArgs) Handles btnSupprimerLigne.Click
         Dim line = TryCast(dgvLignes.CurrentRow?.DataBoundItem, LigneNomenclature)
         If line Is Nothing Then Return
         bsLignes.Remove(line)
+        RefreshTotals()
     End Sub
 
     Private Sub dgvLignes_DataError(sender As Object, e As DataGridViewDataErrorEventArgs) Handles dgvLignes.DataError
@@ -207,32 +225,17 @@ Public Class FormNomenclature
         _nomenclature.Code = txtCode.Text.Trim()
         _nomenclature.Nom = txtNom.Text.Trim()
         _nomenclature.Date = dtpDate.Value.Date
-        _nomenclature.Marque = NullIfEmpty(txtMarque.Text)
-        _nomenclature.GenCode = NullIfEmpty(txtGenCode.Text)
-        _nomenclature.NW = ParseNullableDecimal(txtNW.Text)
-        _nomenclature.GW = ParseNullableDecimal(txtGW.Text)
-        _nomenclature.Modele = NullIfEmpty(txtModele.Text)
-        _nomenclature.FrameSize = NullIfEmpty(cboFrameSize.Text)
-        _nomenclature.WheelSize = NullIfEmpty(cboWheelSize.Text)
-        _nomenclature.RefCustomer = NullIfEmpty(txtRefCustomer.Text)
-        _nomenclature.Couleur = NullIfEmpty(txtCouleur.Text)
-        _nomenclature.TypeDecor = NullIfEmpty(cboTypeDecor.Text)
+        _nomenclature.Marque = NullableConverter.NullIfEmpty(txtMarque.Text)
+        _nomenclature.GenCode = NullableConverter.NullIfEmpty(txtGenCode.Text)
+        _nomenclature.NW = NullableConverter.ParseNullableDecimal(txtNW.Text)
+        _nomenclature.GW = NullableConverter.ParseNullableDecimal(txtGW.Text)
+        _nomenclature.Modele = NullableConverter.NullIfEmpty(txtModele.Text)
+        _nomenclature.FrameSize = NullableConverter.NullIfEmpty(cboFrameSize.Text)
+        _nomenclature.WheelSize = NullableConverter.NullIfEmpty(cboWheelSize.Text)
+        _nomenclature.RefCustomer = NullableConverter.NullIfEmpty(txtRefCustomer.Text)
+        _nomenclature.Couleur = NullableConverter.NullIfEmpty(txtCouleur.Text)
+        _nomenclature.TypeDecor = NullableConverter.NullIfEmpty(cboTypeDecor.Text)
     End Sub
-
-    Private Shared Function NullIfEmpty(value As String) As String
-        Dim trimmed = value?.Trim()
-        Return If(String.IsNullOrEmpty(trimmed), Nothing, trimmed)
-    End Function
-
-    Private Shared Function ParseNullableDecimal(text As String) As Decimal?
-        Dim trimmed = text?.Trim()
-        If String.IsNullOrEmpty(trimmed) Then Return Nothing
-        Dim result As Decimal
-        If Decimal.TryParse(trimmed, NumberStyles.Number, CultureInfo.CurrentCulture, result) Then
-            Return result
-        End If
-        Return Nothing
-    End Function
 
     Private Sub btnEnregistrer_Click(sender As Object, e As EventArgs) Handles btnEnregistrer.Click
         dgvLignes.EndEdit()
@@ -259,6 +262,19 @@ Public Class FormNomenclature
     Private Sub btnAnnuler_Click(sender As Object, e As EventArgs) Handles btnAnnuler.Click
         Me.DialogResult = DialogResult.Cancel
         Me.Close()
+    End Sub
+
+    Private Sub btnApercu_Click(sender As Object, e As EventArgs) Handles btnApercu.Click
+        dgvLignes.EndEdit()
+        bsLignes.EndEdit()
+
+        ' Preview reflects whatever is currently entered, even if not yet saved.
+        ApplyFormToNomenclature()
+        Dim lines = bsLignes.List.Cast(Of LigneNomenclature)().ToList()
+
+        Using form As New FormApercu(_nomenclature, lines)
+            form.ShowDialog(Me)
+        End Using
     End Sub
 
 End Class
