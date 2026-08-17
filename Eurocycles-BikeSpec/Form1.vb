@@ -1,7 +1,6 @@
 Public Class Form1
 
     Private ReadOnly _repository As New NomenclatureRepository()
-    Private ReadOnly _ligneRepository As New LigneNomenclatureRepository()
 
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         dgvNomenclatures.DataSource = bsNomenclatures
@@ -110,12 +109,11 @@ Public Class Form1
 
         Try
             ' The grid row only carries header fields — fetch the full, current record
-            ' (and its lines separately, since Nomenclature doesn't embed them) before previewing.
+            ' (with its Lignes) before previewing.
             Dim nomenclature = _repository.GetByCode(selected.Code)
             If nomenclature Is Nothing Then nomenclature = selected
 
-            Dim lines = _ligneRepository.GetByNomenclatureCode(selected.Code)
-            Using form As New FormApercu(nomenclature, lines)
+            Using form As New FormApercu(nomenclature, nomenclature.Lignes)
                 form.ShowDialog(Me)
             End Using
         Catch ex As DataAccessException

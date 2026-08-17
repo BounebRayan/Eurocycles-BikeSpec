@@ -5,7 +5,7 @@ Imports Microsoft.Data.SqlClient
 ''' Creates connections to the Eurocycles-BikeSpec LocalDB database, using the
 ''' "EurocyclesBikeSpec" connection string from App.config.
 ''' </summary>
-Public Module SqlConnectionFactory
+Public Module DatabaseHelper
 
     Private ReadOnly _connectionString As String =
         ConfigurationManager.ConnectionStrings("EurocyclesBikeSpec")?.ConnectionString

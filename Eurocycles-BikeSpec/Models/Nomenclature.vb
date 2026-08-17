@@ -18,4 +18,8 @@ Public Class Nomenclature
     Public Property TypeDecor As String
     Public Property Photo As Byte()
 
+    ''' <summary>The BOM line items belonging to this Nomenclature. Empty unless
+    ''' populated by NomenclatureRepository.GetByCode (GetAll/Search return headers only).</summary>
+    Public Property Lignes As New List(Of LigneNomenclature)
+
 End Class

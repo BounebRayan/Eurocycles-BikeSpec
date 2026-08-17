@@ -6,9 +6,7 @@ Public Class FormNomenclature
 
     Private ReadOnly _isNewMode As Boolean
     Private ReadOnly _nomenclature As Nomenclature
-    Private ReadOnly _ligneRepository As New LigneNomenclatureRepository()
-    Private ReadOnly _editorService As New NomenclatureEditorService()
-    Private _originalLineCodes As List(Of String)
+    Private ReadOnly _repository As New NomenclatureRepository()
     Private _isDirty As Boolean
 
     Public Sub New()
@@ -48,18 +46,16 @@ Public Class FormNomenclature
     Private Sub FormNomenclature_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         PopulateForm()
 
-        Dim lines As List(Of LigneNomenclature)
+        Dim lines As List(Of LigneNomenclature) = Nothing
         If _isNewMode Then
             lines = New List(Of LigneNomenclature)()
-            _originalLineCodes = New List(Of String)()
         Else
             Try
-                lines = _ligneRepository.GetByNomenclatureCode(_nomenclature.Code)
+                lines = _repository.GetByCode(_nomenclature.Code)?.Lignes
             Catch ex As DataAccessException
                 MessageBox.Show(ex.Message, "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error)
-                lines = New List(Of LigneNomenclature)()
             End Try
-            _originalLineCodes = lines.Select(Function(l) l.Code).ToList()
+            If lines Is Nothing Then lines = New List(Of LigneNomenclature)()
         End If
 
         bsLignes.DataSource = lines
@@ -288,14 +284,14 @@ Public Class FormNomenclature
         If Not ValidateForm() Then Return
 
         ApplyFormToNomenclature()
-
-        Dim lines = bsLignes.List.Cast(Of LigneNomenclature)().ToList()
-        For Each line In lines
-            line.NomenclatureCode = _nomenclature.Code
-        Next
+        _nomenclature.Lignes = bsLignes.List.Cast(Of LigneNomenclature)().ToList()
 
         Try
-            _editorService.Save(_nomenclature, lines, _originalLineCodes, _isNewMode)
+            If _isNewMode Then
+                _repository.Insert(_nomenclature)
+            Else
+                _repository.Update(_nomenclature)
+            End If
             Me.DialogResult = DialogResult.OK
             Me.Close()
         Catch ex As DataAccessException
@@ -315,6 +311,7 @@ Public Class FormNomenclature
         ' Preview reflects whatever is currently entered, even if not yet saved.
         ApplyFormToNomenclature()
         Dim lines = bsLignes.List.Cast(Of LigneNomenclature)().ToList()
+        _nomenclature.Lignes = lines
 
         Using form As New FormApercu(_nomenclature, lines)
             form.ShowDialog(Me)
