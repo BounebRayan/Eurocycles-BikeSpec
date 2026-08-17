@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+  body { margin: 0; background: #EEF0F3; }
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-thumb { background: #C7CCD6; border-radius: 5px; }
+  a { color: #14213D; }
+  a:hover { color: #1F2E52; }
+</style>
+</helmet>
+
+<div style="min-height:100vh; font-family:'Segoe UI', -apple-system, sans-serif; padding:32px 24px 64px; box-sizing:border-box; display:flex; flex-direction:column; align-items:center; gap:24px;">
+
+  <div style="display:flex; gap:8px; background:#fff; padding:6px; border-radius:10px; border:1px solid #E1E4EA; box-shadow:0 1px 3px rgba(20,33,61,0.06);">
+    <button style="padding:9px 18px; border:none; border-radius:7px; font-size:14px; font-weight:600; cursor:pointer; background:{{ tabBg.list }}; color:{{ tabColor.list }};" onClick="{{ goList }}">Liste</button>
+    <button style="padding:9px 18px; border:none; border-radius:7px; font-size:14px; font-weight:600; cursor:pointer; background:{{ tabBg.form }}; color:{{ tabColor.form }};" onClick="{{ goForm }}">Nouvelle fiche</button>
+    <button style="padding:9px 18px; border:none; border-radius:7px; font-size:14px; font-weight:600; cursor:pointer; background:{{ tabBg.edit }}; color:{{ tabColor.edit }};" onClick="{{ goEdit }}">Modifier</button>
+    <button style="padding:9px 18px; border:none; border-radius:7px; font-size:14px; font-weight:600; cursor:pointer; background:{{ tabBg.preview }}; color:{{ tabColor.preview }};" onClick="{{ goPreview }}">Aperçu</button>
+  </div>
+
+  <!-- ===================== SCREEN 1: LIST ===================== -->
+  <sc-if value="{{ isList }}" hint-placeholder-val="{{ true }}">
+  <div style="width:1040px; max-width:96vw; background:#fff; border-radius:10px; overflow:hidden; box-shadow:0 12px 32px rgba(20,33,61,0.16); border:1px solid #dfe2e8;">
+    <div style="background:#14213D; padding:12px 18px; display:flex; align-items:center; gap:10px;">
+      <img src="uploads/logo-1786967232111-l5zd.png" style="height:20px;" alt="Eurocycles" />
+      <div style="color:#C9D2E3; font-size:13px; font-weight:500; margin-left:4px;">BikeSpec — Nomenclatures</div>
+      <div style="flex:1"></div>
+      <div style="width:11px; height:11px; border-radius:50%; background:#3B4A63;"></div>
+      <div style="width:11px; height:11px; border-radius:50%; background:#3B4A63;"></div>
+      <div style="width:11px; height:11px; border-radius:50%; background:#C0392B;"></div>
+    </div>
+
+    <div style="padding:20px 22px 6px; display:flex; align-items:center; gap:12px;">
+      <input type="text" placeholder="Rechercher : code, nom, marque…" style="flex:1; padding:9px 12px; border:1px solid #CBD2DE; border-radius:6px; font-size:14px; color:#14213D;" />
+      <button style="padding:9px 16px; border:1px solid #14213D; background:#fff; color:#14213D; border-radius:6px; font-size:13px; font-weight:600; cursor:pointer;">Rechercher</button>
+      <button style="padding:9px 16px; border:1px solid #CBD2DE; background:#fff; color:#3B4A63; border-radius:6px; font-size:13px; font-weight:600; cursor:pointer;">Réinitialiser</button>
+      <button style="padding:9px 18px; border:none; background:#F5D300; color:#14213D; border-radius:6px; font-size:13px; font-weight:700; cursor:pointer;">+ Nouveau</button>
+    </div>
+
+    <div style="padding:16px 22px 0;">
+      <div style="border:1px solid #E1E4EA; border-radius:8px; overflow:hidden;">
+        <table style="width:100%; border-collapse:collapse; font-size:13px;">
+          <thead>
+            <tr style="background:#14213D;">
+              <th style="text-align:left; padding:11px 14px; color:#fff; font-weight:600; white-space:nowrap;">Code</th>
+              <th style="text-align:left; padding:11px 14px; color:#fff; font-weight:600; white-space:nowrap;">Nom</th>
+              <th style="text-align:left; padding:11px 14px; color:#fff; font-weight:600; white-space:nowrap;">Date</th>
+              <th style="text-align:left; padding:11px 14px; color:#fff; font-weight:600; white-space:nowrap;">Marque</th>
+              <th style="text-align:left; padding:11px 14px; color:#fff; font-weight:600; white-space:nowrap;">Modèle</th>
+              <th style="text-align:left; padding:11px 14px; color:#fff; font-weight:600; white-space:nowrap;">Taille cadre</th>
+              <th style="text-align:left; padding:11px 14px; color:#fff; font-weight:600; white-space:nowrap;">Taille roue</th>
+              <th style="text-align:left; padding:11px 14px; color:#fff; font-weight:600; white-space:nowrap;">Couleur</th>
+            </tr>
+          </thead>
+          <tbody>
+            <sc-for list="{{ bikes }}" as="bike" hint-placeholder-count="4">
+              <tr style="background:{{ bike.rowBg }}; color:{{ bike.rowColor }};">
+                <td style="padding:10px 14px; font-weight:600;">{{ bike.code }}</td>
+                <td style="padding:10px 14px;">{{ bike.nom }}</td>
+                <td style="padding:10px 14px;">{{ bike.date }}</td>
+                <td style="padding:10px 14px;">{{ bike.marque }}</td>
+                <td style="padding:10px 14px;">{{ bike.modele }}</td>
+                <td style="padding:10px 14px;">{{ bike.taille_cadre }}</td>
+                <td style="padding:10px 14px;">{{ bike.taille_roue }}</td>
+                <td style="padding:10px 14px;">{{ bike.couleur }}</td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div style="padding:16px 22px 20px; display:flex; align-items:center; gap:10px;">
+      <div style="color:#2E7D46; font-size:13px; font-weight:600; flex:1;">4 nomenclatures trouvées.</div>
+      <button style="padding:9px 16px; border:1px solid #14213D; background:#fff; color:#14213D; border-radius:6px; font-size:13px; font-weight:600; cursor:pointer;">Modifier</button>
+      <button style="padding:9px 16px; border:1px solid #C0392B; background:#fff; color:#C0392B; border-radius:6px; font-size:13px; font-weight:600; cursor:pointer;">Supprimer</button>
+      <button style="padding:9px 16px; border:none; background:#F5D300; color:#14213D; border-radius:6px; font-size:13px; font-weight:700; cursor:pointer;">Aperçu</button>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- ===================== SCREEN 2: FORM ===================== -->
+  <sc-if value="{{ isForm }}" hint-placeholder-val="{{ false }}">
+  <div style="width:1040px; max-width:96vw; background:#fff; border-radius:10px; overflow:hidden; box-shadow:0 12px 32px rgba(20,33,61,0.16); border:1px solid #dfe2e8;">
+    <div style="background:#14213D; padding:12px 18px; display:flex; align-items:center; gap:10px;">
+      <img src="uploads/logo-1786967232111-l5zd.png" style="height:20px;" alt="Eurocycles" />
+      <div style="color:#C9D2E3; font-size:13px; font-weight:500; margin-left:4px;">Nouvelle nomenclature</div>
+      <div style="flex:1"></div>
+      <div style="width:11px; height:11px; border-radius:50%; background:#3B4A63;"></div>
+      <div style="width:11px; height:11px; border-radius:50%; background:#3B4A63;"></div>
+      <div style="width:11px; height:11px; border-radius:50%; background:#C0392B;"></div>
+    </div>
+
+    <div style="padding:20px 22px; display:grid; grid-template-columns:1fr 1fr 220px; gap:18px;">
+
+      <div style="border:1px solid #E1E4EA; border-radius:8px; padding:16px;">
+        <div style="font-size:12px; font-weight:700; color:#14213D; text-transform:uppercase; letter-spacing:.04em; margin-bottom:12px;">Identification</div>
+        <div style="display:flex; flex-direction:column; gap:12px;">
+          <div><label style="font-size:12px; color:#6B7686; display:block; margin-bottom:4px;">Code *</label><input style="width:100%; box-sizing:border-box; padding:8px 10px; border:1px solid #CBD2DE; border-radius:6px; font-size:13px;" /></div>
+          <div><label style="font-size:12px; color:#6B7686; display:block; margin-bottom:4px;">Nom *</label><input style="width:100%; box-sizing:border-box; padding:8px 10px; border:1px solid #CBD2DE; border-radius:6px; font-size:13px;" /></div>
+          <div><label style="font-size:12px; color:#6B7686; display:block; margin-bottom:4px;">Date *</label><input value="17/08/2026" style="width:100%; box-sizing:border-box; padding:8px 10px; border:1px solid #CBD2DE; border-radius:6px; font-size:13px;" /></div>
+          <div><label style="font-size:12px; color:#6B7686; display:block; margin-bottom:4px;">Ref. client</label><input style="width:100%; box-sizing:border-box; padding:8px 10px; border:1px solid #CBD2DE; border-radius:6px; font-size:13px;" /></div>
+        </div>
+      </div>
+
+      <div style="border:1px solid #E1E4EA; border-radius:8px; padding:16px;">
+        <div style="font-size:12px; font-weight:700; color:#14213D; text-transform:uppercase; letter-spacing:.04em; margin-bottom:12px;">Caractéristiques techniques</div>
+        <div style="display:flex; flex-direction:column; gap:12px;">
+          <div style="display:flex; gap:10px;">
+            <div style="flex:1"><label style="font-size:12px; color:#6B7686; display:block; margin-bottom:4px;">Marque</label><input style="width:100%; box-sizing:border-box; padding:8px 10px; border:1px solid #CBD2DE; border-radius:6px; font-size:13px;" /></div>
+            <div style="flex:1"><label style="font-size:12px; color:#6B7686; display:block; margin-bottom:4px;">Modèle</label><input style="width:100%; box-sizing:border-box; padding:8px 10px; border:1px solid #CBD2DE; border-radius:6px; font-size:13px;" /></div>
+          </div>
+          <div style="display:flex; gap:10px;">
+            <div style="flex:1"><label style="font-size:12px; color:#6B7686; display:block; margin-bottom:4px;">GenCode</label><input style="width:100%; box-sizing:border-box; padding:8px 10px; border:1px solid #CBD2DE; border-radius:6px; font-size:13px;" /></div>
+            <div style="flex:1"><label style="font-size:12px; color:#6B7686; display:block; margin-bottom:4px;">Couleur</label><input style="width:100%; box-sizing:border-box; padding:8px 10px; border:1px solid #CBD2DE; border-radius:6px; font-size:13px;" /></div>
+          </div>
+          <div style="display:flex; gap:10px;">
+            <div style="flex:1"><label style="font-size:12px; color:#6B7686; display:block; margin-bottom:4px;">NW (kg)</label><input style="width:100%; box-sizing:border-box; padding:8px 10px; border:1px solid #CBD2DE; border-radius:6px; font-size:13px;" /></div>
+            <div style="flex:1"><label style="font-size:12px; color:#6B7686; display:block; margin-bottom:4px;">GW (kg)</label><input style="width:100%; box-sizing:border-box; padding:8px 10px; border:1px solid #CBD2DE; border-radius:6px; font-size:13px;" /></div>
+          </div>
+          <div style="display:flex; gap:10px;">
+            <div style="flex:1"><label style="font-size:12px; color:#6B7686; display:block; margin-bottom:4px;">Taille cadre</label><select style="width:100%; box-sizing:border-box; padding:8px 10px; border:1px solid #CBD2DE; border-radius:6px; font-size:13px; color:#6B7686;"><option>—</option></select></div>
+            <div style="flex:1"><label style="font-size:12px; color:#6B7686; display:block; margin-bottom:4px;">Taille roue</label><select style="width:100%; box-sizing:border-box; padding:8px 10px; border:1px solid #CBD2DE; border-radius:6px; font-size:13px; color:#6B7686;"><option>—</option></select></div>
+          </div>
+          <div><label style="font-size:12px; color:#6B7686; display:block; margin-bottom:4px;">Type décor</label><select style="width:100%; box-sizing:border-box; padding:8px 10px; border:1px solid #CBD2DE; border-radius:6px; font-size:13px; color:#6B7686;"><option>—</option></select></div>
+        </div>
+      </div>
+
+      <div style="border:1px solid #E1E4EA; border-radius:8px; padding:16px; display:flex; flex-direction:column; align-items:center;">
+        <div style="font-size:12px; font-weight:700; color:#14213D; text-transform:uppercase; letter-spacing:.04em; margin-bottom:12px; align-self:flex-start;">Photo</div>
+        <div style="width:100%; aspect-ratio:1; background:#F4F5F7; border:1px dashed #CBD2DE; border-radius:8px; display:flex; align-items:center; justify-content:center; color:#9AA4B2; font-size:12px; margin-bottom:12px;">Aperçu photo</div>
+        <button style="width:100%; padding:9px; border:1px solid #14213D; background:#fff; color:#14213D; border-radius:6px; font-size:13px; font-weight:600; cursor:pointer; margin-bottom:8px;">Choisir photo…</button>
+        <button style="width:100%; padding:9px; border:1px solid #CBD2DE; background:#fff; color:#6B7686; border-radius:6px; font-size:13px; font-weight:600; cursor:pointer;">Supprimer</button>
+      </div>
+    </div>
+
+    <div style="padding:0 22px 20px;">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;">
+        <div style="font-size:12px; font-weight:700; color:#14213D; text-transform:uppercase; letter-spacing:.04em;">Lignes de la nomenclature</div>
+        <div style="display:flex; gap:8px;">
+          <button style="padding:7px 14px; border:1px solid #14213D; background:#fff; color:#14213D; border-radius:6px; font-size:12px; font-weight:600; cursor:pointer;">+ Ajouter ligne</button>
+          <button style="padding:7px 14px; border:1px solid #CBD2DE; background:#fff; color:#6B7686; border-radius:6px; font-size:12px; font-weight:600; cursor:pointer;">Supprimer ligne</button>
+        </div>
+      </div>
+      <div style="border:1px solid #E1E4EA; border-radius:8px; overflow:hidden;">
+        <table style="width:100%; border-collapse:collapse; font-size:13px;">
+          <thead>
+            <tr style="background:#14213D;">
+              <th style="text-align:left; padding:10px 14px; color:#fff; font-weight:600; white-space:nowrap;">Code</th>
+              <th style="text-align:left; padding:10px 14px; color:#fff; font-weight:600; white-space:nowrap;">Désignation</th>
+              <th style="text-align:left; padding:10px 14px; color:#fff; font-weight:600; white-space:nowrap;">Qté</th>
+              <th style="text-align:left; padding:10px 14px; color:#fff; font-weight:600; white-space:nowrap;">Prix</th>
+              <th style="text-align:left; padding:10px 14px; color:#fff; font-weight:600; white-space:nowrap;">Fabricant</th>
+              <th style="text-align:left; padding:10px 14px; color:#fff; font-weight:600; white-space:nowrap;">Imprimé</th>
+              <th style="text-align:left; padding:10px 14px; color:#fff; font-weight:600; white-space:nowrap;">Observation</th>
+              <th style="text-align:left; padding:10px 14px; color:#fff; font-weight:600; white-space:nowrap;">Devise</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td colspan="8" style="padding:28px 14px; text-align:center; color:#9AA4B2; font-size:13px;">Aucune ligne.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div style="padding:16px 22px; border-top:1px solid #E1E4EA; display:flex; justify-content:flex-end; gap:10px;">
+      <button style="padding:9px 18px; border:1px solid #14213D; background:#fff; color:#14213D; border-radius:6px; font-size:13px; font-weight:600; cursor:pointer;">Aperçu</button>
+      <button style="padding:9px 18px; border:1px solid #CBD2DE; background:#fff; color:#6B7686; border-radius:6px; font-size:13px; font-weight:600; cursor:pointer;">Annuler</button>
+      <button style="padding:9px 20px; border:none; background:#F5D300; color:#14213D; border-radius:6px; font-size:13px; font-weight:700; cursor:pointer;">Enregistrer</button>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- ===================== SCREEN: EDIT ===================== -->
+  <sc-if value="{{ isEdit }}" hint-placeholder-val="{{ false }}">
+  <div style="width:1040px; max-width:96vw; background:#fff; border-radius:10px; overflow:hidden; box-shadow:0 12px 32px rgba(20,33,61,0.16); border:1px solid #dfe2e8;">
+    <div style="background:#14213D; padding:12px 18px; display:flex; align-items:center; gap:10px;">
+      <img src="uploads/logo-1786967232111-l5zd.png" style="height:20px;" alt="Eurocycles" />
+      <div style="color:#C9D2E3; font-size:13px; font-weight:500; margin-left:4px;">Modifier nomenclature — BK-2024-002</div>
+      <div style="flex:1"></div>
+      <div style="width:11px; height:11px; border-radius:50%; background:#3B4A63;"></div>
+      <div style="width:11px; height:11px; border-radius:50%; background:#3B4A63;"></div>
+      <div style="width:11px; height:11px; border-radius:50%; background:#C0392B;"></div>
+    </div>
+
+    <div style="padding:20px 22px; display:grid; grid-template-columns:1fr 1fr 220px; gap:18px;">
+
+      <div style="border:1px solid #E1E4EA; border-radius:8px; padding:16px;">
+        <div style="font-size:12px; font-weight:700; color:#14213D; text-transform:uppercase; letter-spacing:.04em; margin-bottom:12px;">Identification</div>
+        <div style="display:flex; flex-direction:column; gap:12px;">
+          <div><label style="font-size:12px; color:#6B7686; display:block; margin-bottom:4px;">Code *</label><input value="BK-2024-002" style="width:100%; box-sizing:border-box; padding:8px 10px; border:1px solid #CBD2DE; border-radius:6px; font-size:13px;" /></div>
+          <div><label style="font-size:12px; color:#6B7686; display:block; margin-bottom:4px;">Nom *</label><input value="Vélo Ville Confort" style="width:100%; box-sizing:border-box; padding:8px 10px; border:1px solid #CBD2DE; border-radius:6px; font-size:13px;" /></div>
+          <div><label style="font-size:12px; color:#6B7686; display:block; margin-bottom:4px;">Date *</label><input value="02/04/2024" style="width:100%; box-sizing:border-box; padding:8px 10px; border:1px solid #CBD2DE; border-radius:6px; font-size:13px;" /></div>
+          <div><label style="font-size:12px; color:#6B7686; display:block; margin-bottom:4px;">Ref. client</label><input style="width:100%; box-sizing:border-box; padding:8px 10px; border:1px solid #CBD2DE; border-radius:6px; font-size:13px;" /></div>
+        </div>
+      </div>
+
+      <div style="border:1px solid #E1E4EA; border-radius:8px; padding:16px;">
+        <div style="font-size:12px; font-weight:700; color:#14213D; text-transform:uppercase; letter-spacing:.04em; margin-bottom:12px;">Caractéristiques techniques</div>
+        <div style="display:flex; flex-direction:column; gap:12px;">
+          <div style="display:flex; gap:10px;">
+            <div style="flex:1"><label style="font-size:12px; color:#6B7686; display:block; margin-bottom:4px;">Marque</label><input value="Eurocycles" style="width:100%; box-sizing:border-box; padding:8px 10px; border:1px solid #CBD2DE; border-radius:6px; font-size:13px;" /></div>
+            <div style="flex:1"><label style="font-size:12px; color:#6B7686; display:block; margin-bottom:4px;">Modèle</label><input value="Citadine Comfort" style="width:100%; box-sizing:border-box; padding:8px 10px; border:1px solid #CBD2DE; border-radius:6px; font-size:13px;" /></div>
+          </div>
+          <div style="display:flex; gap:10px;">
+            <div style="flex:1"><label style="font-size:12px; color:#6B7686; display:block; margin-bottom:4px;">GenCode</label><input style="width:100%; box-sizing:border-box; padding:8px 10px; border:1px solid #CBD2DE; border-radius:6px; font-size:13px;" /></div>
+            <div style="flex:1"><label style="font-size:12px; color:#6B7686; display:block; margin-bottom:4px;">Couleur</label><input value="Bleu Océan" style="width:100%; box-sizing:border-box; padding:8px 10px; border:1px solid #CBD2DE; border-radius:6px; font-size:13px;" /></div>
+          </div>
+          <div style="display:flex; gap:10px;">
+            <div style="flex:1"><label style="font-size:12px; color:#6B7686; display:block; margin-bottom:4px;">NW (kg)</label><input value="15,200" style="width:100%; box-sizing:border-box; padding:8px 10px; border:1px solid #CBD2DE; border-radius:6px; font-size:13px;" /></div>
+            <div style="flex:1"><label style="font-size:12px; color:#6B7686; display:block; margin-bottom:4px;">GW (kg)</label><input value="17,100" style="width:100%; box-sizing:border-box; padding:8px 10px; border:1px solid #CBD2DE; border-radius:6px; font-size:13px;" /></div>
+          </div>
+          <div style="display:flex; gap:10px;">
+            <div style="flex:1"><label style="font-size:12px; color:#6B7686; display:block; margin-bottom:4px;">Taille cadre</label><select style="width:100%; box-sizing:border-box; padding:8px 10px; border:1px solid #CBD2DE; border-radius:6px; font-size:13px; color:#14213D;"><option>16</option></select></div>
+            <div style="flex:1"><label style="font-size:12px; color:#6B7686; display:block; margin-bottom:4px;">Taille roue</label><select style="width:100%; box-sizing:border-box; padding:8px 10px; border:1px solid #CBD2DE; border-radius:6px; font-size:13px; color:#14213D;"><option>16</option></select></div>
+          </div>
+          <div><label style="font-size:12px; color:#6B7686; display:block; margin-bottom:4px;">Type décor</label><select style="width:100%; box-sizing:border-box; padding:8px 10px; border:1px solid #CBD2DE; border-radius:6px; font-size:13px; color:#14213D;"><option>Polyester</option></select></div>
+        </div>
+      </div>
+
+      <div style="border:1px solid #E1E4EA; border-radius:8px; padding:16px; display:flex; flex-direction:column; align-items:center;">
+        <div style="font-size:12px; font-weight:700; color:#14213D; text-transform:uppercase; letter-spacing:.04em; margin-bottom:12px; align-self:flex-start;">Photo</div>
+        <div style="width:100%; aspect-ratio:1; background:#F4F5F7; border:1px dashed #CBD2DE; border-radius:8px; display:flex; align-items:center; justify-content:center; color:#9AA4B2; font-size:12px; margin-bottom:12px;">Aperçu photo</div>
+        <button style="width:100%; padding:9px; border:1px solid #14213D; background:#fff; color:#14213D; border-radius:6px; font-size:13px; font-weight:600; cursor:pointer; margin-bottom:8px;">Choisir photo…</button>
+        <button style="width:100%; padding:9px; border:1px solid #CBD2DE; background:#fff; color:#6B7686; border-radius:6px; font-size:13px; font-weight:600; cursor:pointer;">Supprimer</button>
+      </div>
+    </div>
+
+    <div style="padding:0 22px 20px;">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;">
+        <div style="font-size:12px; font-weight:700; color:#14213D; text-transform:uppercase; letter-spacing:.04em;">Lignes de la nomenclature</div>
+        <div style="display:flex; gap:8px;">
+          <button style="padding:7px 14px; border:1px solid #14213D; background:#fff; color:#14213D; border-radius:6px; font-size:12px; font-weight:600; cursor:pointer;">+ Ajouter ligne</button>
+          <button style="padding:7px 14px; border:1px solid #CBD2DE; background:#fff; color:#6B7686; border-radius:6px; font-size:12px; font-weight:600; cursor:pointer;">Supprimer ligne</button>
+        </div>
+      </div>
+      <div style="border:1px solid #E1E4EA; border-radius:8px; overflow:hidden;">
+        <table style="width:100%; border-collapse:collapse; font-size:13px;">
+          <thead>
+            <tr style="background:#14213D;">
+              <th style="text-align:left; padding:10px 14px; color:#fff; font-weight:600; white-space:nowrap;">Code</th>
+              <th style="text-align:left; padding:10px 14px; color:#fff; font-weight:600; white-space:nowrap;">Désignation</th>
+              <th style="text-align:left; padding:10px 14px; color:#fff; font-weight:600; white-space:nowrap;">Qté</th>
+              <th style="text-align:left; padding:10px 14px; color:#fff; font-weight:600; white-space:nowrap;">Prix</th>
+              <th style="text-align:left; padding:10px 14px; color:#fff; font-weight:600; white-space:nowrap;">Fabricant</th>
+              <th style="text-align:left; padding:10px 14px; color:#fff; font-weight:600; white-space:nowrap;">Imprimé</th>
+              <th style="text-align:left; padding:10px 14px; color:#fff; font-weight:600; white-space:nowrap;">Observation</th>
+              <th style="text-align:left; padding:10px 14px; color:#fff; font-weight:600; white-space:nowrap;">Devise</th>
+            </tr>
+          </thead>
+          <tbody>
+            <sc-for list="{{ editLines }}" as="line" hint-placeholder-count="2">
+              <tr style="background:{{ line.rowBg }}; color:{{ line.rowColor }};">
+                <td style="padding:9px 14px; font-weight:600;">{{ line.code }}</td>
+                <td style="padding:9px 14px;">{{ line.designation }}</td>
+                <td style="padding:9px 14px;">{{ line.qte }}</td>
+                <td style="padding:9px 14px;">{{ line.prix }}</td>
+                <td style="padding:9px 14px;">{{ line.fabricant }}</td>
+                <td style="padding:9px 14px;">{{ line.imprime }}</td>
+                <td style="padding:9px 14px;">{{ line.observation }}</td>
+                <td style="padding:9px 14px;">{{ line.devise }}</td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div style="padding:16px 22px; border-top:1px solid #E1E4EA; display:flex; align-items:center; gap:10px;">
+      <div style="flex:1; font-size:13px; font-weight:700; color:#14213D;">Total : 18,500 Euro · 22,750 TND</div>
+      <button style="padding:9px 18px; border:1px solid #14213D; background:#fff; color:#14213D; border-radius:6px; font-size:13px; font-weight:600; cursor:pointer;">Aperçu</button>
+      <button style="padding:9px 18px; border:1px solid #CBD2DE; background:#fff; color:#6B7686; border-radius:6px; font-size:13px; font-weight:600; cursor:pointer;">Annuler</button>
+      <button style="padding:9px 20px; border:none; background:#F5D300; color:#14213D; border-radius:6px; font-size:13px; font-weight:700; cursor:pointer;">Enregistrer</button>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- ===================== SCREEN 3: PREVIEW ===================== -->
+  <sc-if value="{{ isPreview }}" hint-placeholder-val="{{ false }}">
+  <div style="width:1040px; max-width:96vw; background:#fff; border-radius:10px; overflow:hidden; box-shadow:0 12px 32px rgba(20,33,61,0.16); border:1px solid #dfe2e8;">
+    <div style="background:#14213D; padding:12px 18px; display:flex; align-items:center; gap:10px;">
+      <img src="uploads/logo-1786967232111-l5zd.png" style="height:20px;" alt="Eurocycles" />
+      <div style="color:#C9D2E3; font-size:13px; font-weight:500; margin-left:4px;">Aperçu — BK-2024-001</div>
+      <div style="flex:1"></div>
+      <div style="width:11px; height:11px; border-radius:50%; background:#3B4A63;"></div>
+      <div style="width:11px; height:11px; border-radius:50%; background:#C0392B;"></div>
+    </div>
+
+    <div style="padding:20px 22px; display:grid; grid-template-columns:1fr 1fr 220px; gap:18px;">
+      <div style="border:1px solid #E1E4EA; border-radius:8px; padding:16px;">
+        <div style="font-size:12px; font-weight:700; color:#14213D; text-transform:uppercase; letter-spacing:.04em; margin-bottom:12px;">Identification</div>
+        <div style="display:flex; flex-direction:column; gap:12px;">
+          <div><label style="font-size:12px; color:#6B7686; display:block; margin-bottom:4px;">Code</label><div style="padding:8px 10px; background:#F4F5F7; border:1px solid #E1E4EA; border-radius:6px; font-size:13px; color:#14213D; font-weight:600;">BK-2024-001</div></div>
+          <div><label style="font-size:12px; color:#6B7686; display:block; margin-bottom:4px;">Nom</label><div style="padding:8px 10px; background:#F4F5F7; border:1px solid #E1E4EA; border-radius:6px; font-size:13px;">VTT Alpin Pro</div></div>
+          <div><label style="font-size:12px; color:#6B7686; display:block; margin-bottom:4px;">Date</label><div style="padding:8px 10px; background:#F4F5F7; border:1px solid #E1E4EA; border-radius:6px; font-size:13px;">15/03/2024</div></div>
+          <div><label style="font-size:12px; color:#6B7686; display:block; margin-bottom:4px;">Ref. client</label><div style="padding:8px 10px; background:#F4F5F7; border:1px solid #E1E4EA; border-radius:6px; font-size:13px;">CUST-001</div></div>
+        </div>
+      </div>
+
+      <div style="border:1px solid #E1E4EA; border-radius:8px; padding:16px;">
+        <div style="font-size:12px; font-weight:700; color:#14213D; text-transform:uppercase; letter-spacing:.04em; margin-bottom:12px;">Caractéristiques techniques</div>
+        <div style="display:flex; flex-direction:column; gap:12px;">
+          <div style="display:flex; gap:10px;">
+            <div style="flex:1"><label style="font-size:12px; color:#6B7686; display:block; margin-bottom:4px;">Marque</label><div style="padding:8px 10px; background:#F4F5F7; border:1px solid #E1E4EA; border-radius:6px; font-size:13px;">Eurocycles</div></div>
+            <div style="flex:1"><label style="font-size:12px; color:#6B7686; display:block; margin-bottom:4px;">Modèle</label><div style="padding:8px 10px; background:#F4F5F7; border:1px solid #E1E4EA; border-radius:6px; font-size:13px;">Alpin Pro X1</div></div>
+          </div>
+          <div style="display:flex; gap:10px;">
+            <div style="flex:1"><label style="font-size:12px; color:#6B7686; display:block; margin-bottom:4px;">GenCode</label><div style="padding:8px 10px; background:#F4F5F7; border:1px solid #E1E4EA; border-radius:6px; font-size:13px;">1234567890123</div></div>
+            <div style="flex:1"><label style="font-size:12px; color:#6B7686; display:block; margin-bottom:4px;">Couleur</label><div style="padding:8px 10px; background:#F4F5F7; border:1px solid #E1E4EA; border-radius:6px; font-size:13px;">Rouge Mat</div></div>
+          </div>
+          <div style="display:flex; gap:10px;">
+            <div style="flex:1"><label style="font-size:12px; color:#6B7686; display:block; margin-bottom:4px;">NW (kg)</label><div style="padding:8px 10px; background:#F4F5F7; border:1px solid #E1E4EA; border-radius:6px; font-size:13px;">12,500</div></div>
+            <div style="flex:1"><label style="font-size:12px; color:#6B7686; display:block; margin-bottom:4px;">GW (kg)</label><div style="padding:8px 10px; background:#F4F5F7; border:1px solid #E1E4EA; border-radius:6px; font-size:13px;">14,800</div></div>
+          </div>
+          <div style="display:flex; gap:10px;">
+            <div style="flex:1"><label style="font-size:12px; color:#6B7686; display:block; margin-bottom:4px;">Taille cadre</label><div style="padding:8px 10px; background:#F4F5F7; border:1px solid #E1E4EA; border-radius:6px; font-size:13px;">17</div></div>
+            <div style="flex:1"><label style="font-size:12px; color:#6B7686; display:block; margin-bottom:4px;">Taille roue</label><div style="padding:8px 10px; background:#F4F5F7; border:1px solid #E1E4EA; border-radius:6px; font-size:13px;">27</div></div>
+          </div>
+          <div><label style="font-size:12px; color:#6B7686; display:block; margin-bottom:4px;">Type décor</label><div style="padding:8px 10px; background:#F4F5F7; border:1px solid #E1E4EA; border-radius:6px; font-size:13px;">Standard</div></div>
+        </div>
+      </div>
+
+      <div style="border:1px solid #E1E4EA; border-radius:8px; padding:16px; display:flex; flex-direction:column; align-items:center;">
+        <div style="font-size:12px; font-weight:700; color:#14213D; text-transform:uppercase; letter-spacing:.04em; margin-bottom:12px; align-self:flex-start;">Photo</div>
+        <div style="width:100%; aspect-ratio:1; background:#F4F5F7; border:1px solid #E1E4EA; border-radius:8px; display:flex; align-items:center; justify-content:center; color:#9AA4B2; font-size:12px;">Aucune photo</div>
+      </div>
+    </div>
+
+    <div style="padding:0 22px 20px;">
+      <div style="font-size:12px; font-weight:700; color:#14213D; text-transform:uppercase; letter-spacing:.04em; margin-bottom:10px;">Lignes de la nomenclature</div>
+      <div style="border:1px solid #E1E4EA; border-radius:8px; overflow:hidden;">
+        <table style="width:100%; border-collapse:collapse; font-size:13px;">
+          <thead>
+            <tr style="background:#14213D;">
+              <th style="text-align:left; padding:10px 14px; color:#fff; font-weight:600; white-space:nowrap;">Désignation</th>
+              <th style="text-align:left; padding:10px 14px; color:#fff; font-weight:600; white-space:nowrap;">Qté</th>
+              <th style="text-align:left; padding:10px 14px; color:#fff; font-weight:600; white-space:nowrap;">Prix</th>
+              <th style="text-align:left; padding:10px 14px; color:#fff; font-weight:600; white-space:nowrap;">Fabricant</th>
+              <th style="text-align:left; padding:10px 14px; color:#fff; font-weight:600; white-space:nowrap;">Imprimé</th>
+              <th style="text-align:left; padding:10px 14px; color:#fff; font-weight:600; white-space:nowrap;">Devise</th>
+              <th style="text-align:left; padding:10px 14px; color:#fff; font-weight:600; white-space:nowrap;">Observation</th>
+            </tr>
+          </thead>
+          <tbody>
+            <sc-for list="{{ lines }}" as="line" hint-placeholder-count="3">
+              <tr style="background:{{ line.rowBg }}; color:{{ line.rowColor }};">
+                <td style="padding:9px 14px; font-weight:600;">{{ line.designation }}</td>
+                <td style="padding:9px 14px;">{{ line.qte }}</td>
+                <td style="padding:9px 14px;">{{ line.prix }}</td>
+                <td style="padding:9px 14px;">{{ line.fabricant }}</td>
+                <td style="padding:9px 14px;">{{ line.imprime }}</td>
+                <td style="padding:9px 14px;">{{ line.devise }}</td>
+                <td style="padding:9px 14px;">{{ line.observation }}</td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div style="padding:16px 22px; border-top:1px solid #E1E4EA; display:flex; align-items:center; gap:10px;">
+      <div style="flex:1; font-size:13px; font-weight:700; color:#14213D;">Total : 235,490 Euro · 65,000 USD</div>
+      <button style="padding:9px 18px; border:1px solid #14213D; background:#fff; color:#14213D; border-radius:6px; font-size:13px; font-weight:600; cursor:pointer;">Modifier</button>
+      <button style="padding:9px 20px; border:none; background:#F5D300; color:#14213D; border-radius:6px; font-size:13px; font-weight:700; cursor:pointer;">Imprimer</button>
+      <button style="padding:9px 18px; border:1px solid #CBD2DE; background:#fff; color:#6B7686; border-radius:6px; font-size:13px; font-weight:600; cursor:pointer;">Fermer</button>
+    </div>
+  </div>
+  </sc-if>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { screen: 'list' };
+
+  bikes = [
+    { code:'BK-2024-001', nom:'VTT Alpin Pro', date:'15/03/2024', marque:'Eurocycles', modele:'Alpin Pro X1', taille_cadre:'17', taille_roue:'27', couleur:'Rouge Mat', selected:true },
+    { code:'BK-2024-002', nom:'Vélo Ville Confort', date:'02/04/2024', marque:'Eurocycles', modele:'Citadine Comfort', taille_cadre:'16', taille_roue:'16', couleur:'Bleu Océan' },
+    { code:'BK-2024-003', nom:'BMX Freestyle Junior', date:'20/05/2024', marque:'Eurocycles Kids', modele:'Freestyle Jr', taille_cadre:'14', taille_roue:'20', couleur:'Jaune Fluo' },
+    { code:'BK-2024-004', nom:'Vélo Route Perform…', date:'10/06/2024', marque:'Eurocycles Sport', modele:'Route Perf S2', taille_cadre:'15', taille_roue:'29', couleur:'Noir Carbone' },
+  ];
+
+  lines = [
+    { designation:'Cadre aluminium 6061', qte:'1,00', prix:'145,500', fabricant:'AlloyTech', imprime:'✓', devise:'Euro', observation:'', selected:true },
+    { designation:'Fourche suspension 120mm', qte:'1,00', prix:'89,990', fabricant:'SuspenPro', imprime:'✓', devise:'Euro', observation:'Réglage usine' },
+    { designation:'Groupe de transmission 21V', qte:'1,00', prix:'65,000', fabricant:'ShiftMaster', imprime:'✓', devise:'USD', observation:'' },
+  ];
+
+  editLines = [
+    { code:'BK-2024-002-L1', designation:'Panier avant osier', qte:'1,00', prix:'18,500', fabricant:'', imprime:'☐', observation:'', devise:'Euro', selected:true },
+    { code:'BK-2024-002-L2', designation:'Selle confort gel', qte:'1,00', prix:'22,750', fabricant:'ComfortSeat', imprime:'✓', observation:'', devise:'TND' },
+  ];
+
+  renderVals() {
+    const screen = this.state.screen;
+    const tabStyle = (name) => screen === name
+      ? { bg: '#14213D', color: '#fff' }
+      : { bg: 'transparent', color: '#3B4A63' };
+    const list = tabStyle('list'), form = tabStyle('form'), edit = tabStyle('edit'), preview = tabStyle('preview');
+
+    return {
+      isList: screen === 'list',
+      isForm: screen === 'form',
+      isEdit: screen === 'edit',
+      isPreview: screen === 'preview',
+      goList: () => this.setState({ screen: 'list' }),
+      goForm: () => this.setState({ screen: 'form' }),
+      goEdit: () => this.setState({ screen: 'edit' }),
+      goPreview: () => this.setState({ screen: 'preview' }),
+      tabBg: { list: list.bg, form: form.bg, edit: edit.bg, preview: preview.bg },
+      tabColor: { list: list.color, form: form.color, edit: edit.color, preview: preview.color },
+      columns: ['Code','Nom','Date','Marque','Modèle','Taille cadre','Taille roue','Couleur'],
+      lineColumns: ['Code','Désignation','Qté','Prix','Fabricant','Imprimé','Observation','Devise'],
+      previewColumns: ['Désignation','Qté','Prix','Fabricant','Imprimé','Devise','Observation'],
+      bikes: this.bikes.map(b => ({
+        ...b,
+        rowBg: b.selected ? '#14213D' : '#fff',
+        rowColor: b.selected ? '#fff' : '#14213D',
+      })),
+      lines: this.lines.map(l => ({
+        ...l,
+        rowBg: l.selected ? '#14213D' : '#fff',
+        rowColor: l.selected ? '#fff' : '#14213D',
+      })),
+      editLines: this.editLines.map(l => ({
+        ...l,
+        rowBg: l.selected ? '#14213D' : '#fff',
+        rowColor: l.selected ? '#fff' : '#14213D',
+      })),
+    };
+  }
+}
+
+</script>
+</body>
+</html>

@@ -35,60 +35,64 @@ Partial Class Form1
 
         Me.bsNomenclatures = New BindingSource(Me.components)
         Me.pnlTop = New FlowLayoutPanel()
-        Me.lblSearch = New Label()
         Me.txtSearch = New TextBox()
         Me.btnSearch = New Button()
-        Me.btnNouveau = New Button()
         Me.btnActualiser = New Button()
+        Me.btnNouveau = New Button()
         Me.dgvNomenclatures = New DataGridView()
-        Me.pnlBottom = New FlowLayoutPanel()
+        Me.pnlBottom = New Panel()
+        Me.lblStatusCount = New Label()
+        Me.pnlBottomButtons = New FlowLayoutPanel()
         Me.btnModifier = New Button()
         Me.btnSupprimer = New Button()
         Me.btnApercu = New Button()
-        Me.ssStatus = New StatusStrip()
-        Me.lblStatusCount = New ToolStripStatusLabel()
 
         CType(Me.bsNomenclatures, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.dgvNomenclatures, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.pnlTop.SuspendLayout()
         Me.pnlBottom.SuspendLayout()
+        Me.pnlBottomButtons.SuspendLayout()
         Me.SuspendLayout()
 
-        ' pnlTop
+        ' pnlTop (search row)
         Me.pnlTop.Dock = DockStyle.Top
         Me.pnlTop.AutoSize = True
+        Me.pnlTop.BackColor = Theme.CardBackground
         Me.pnlTop.FlowDirection = FlowDirection.LeftToRight
         Me.pnlTop.WrapContents = False
-        Me.pnlTop.Padding = New Padding(8)
-        Me.pnlTop.Controls.Add(Me.lblSearch)
+        Me.pnlTop.Padding = New Padding(22, 16, 22, 10)
         Me.pnlTop.Controls.Add(Me.txtSearch)
         Me.pnlTop.Controls.Add(Me.btnSearch)
-        Me.pnlTop.Controls.Add(Me.btnNouveau)
         Me.pnlTop.Controls.Add(Me.btnActualiser)
-
-        ' lblSearch
-        Me.lblSearch.AutoSize = True
-        Me.lblSearch.Text = "Rechercher :"
-        Me.lblSearch.Margin = New Padding(3, 8, 3, 3)
+        Me.pnlTop.Controls.Add(Me.btnNouveau)
 
         ' txtSearch
-        Me.txtSearch.Width = 220
-        Me.txtSearch.Margin = New Padding(3, 4, 12, 3)
+        Me.txtSearch.Width = 380
+        Me.txtSearch.Height = 24
+        Me.txtSearch.Font = Theme.BodyFont
+        Me.txtSearch.BorderStyle = BorderStyle.FixedSingle
+        Me.txtSearch.Margin = New Padding(0, 2, 12, 3)
 
         ' btnSearch
         Me.btnSearch.AutoSize = True
+        Me.btnSearch.Height = 30
         Me.btnSearch.Text = "Rechercher"
-        Me.btnSearch.Margin = New Padding(3, 3, 20, 3)
+        Me.btnSearch.Margin = New Padding(0, 0, 8, 0)
+        Theme.ApplyOutlineButton(Me.btnSearch)
+
+        ' btnActualiser (mockup renames this "Réinitialiser")
+        Me.btnActualiser.AutoSize = True
+        Me.btnActualiser.Height = 30
+        Me.btnActualiser.Text = "Réinitialiser"
+        Me.btnActualiser.Margin = New Padding(0, 0, 8, 0)
+        Theme.ApplyMutedButton(Me.btnActualiser)
 
         ' btnNouveau
         Me.btnNouveau.AutoSize = True
-        Me.btnNouveau.Text = "Nouveau"
-        Me.btnNouveau.Margin = New Padding(3)
-
-        ' btnActualiser
-        Me.btnActualiser.AutoSize = True
-        Me.btnActualiser.Text = "Actualiser"
-        Me.btnActualiser.Margin = New Padding(3)
+        Me.btnNouveau.Height = 30
+        Me.btnNouveau.Text = "+ Nouveau"
+        Me.btnNouveau.Margin = New Padding(0)
+        Theme.ApplyPrimaryButton(Me.btnNouveau)
 
         ' dgvNomenclatures
         Me.dgvNomenclatures.Dock = DockStyle.Fill
@@ -101,6 +105,8 @@ Partial Class Form1
         Me.dgvNomenclatures.MultiSelect = False
         Me.dgvNomenclatures.AutoGenerateColumns = False
         Me.dgvNomenclatures.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
+        Me.dgvNomenclatures.Margin = New Padding(22, 0, 22, 0)
+        Theme.ApplyGridStyle(Me.dgvNomenclatures)
 
         colCode.Name = "colCode"
         colCode.HeaderText = "Code"
@@ -139,69 +145,86 @@ Partial Class Form1
             colCode, colNom, colDate, colMarque, colModele, colFrameSize, colWheelSize, colCouleur
         })
 
-        ' pnlBottom
+        ' pnlBottom (footer: status text left, action buttons right - one row, per the mockup)
         Me.pnlBottom.Dock = DockStyle.Bottom
-        Me.pnlBottom.AutoSize = True
-        Me.pnlBottom.FlowDirection = FlowDirection.LeftToRight
-        Me.pnlBottom.WrapContents = False
-        Me.pnlBottom.Padding = New Padding(8)
-        Me.pnlBottom.Controls.Add(Me.btnModifier)
-        Me.pnlBottom.Controls.Add(Me.btnSupprimer)
-        Me.pnlBottom.Controls.Add(Me.btnApercu)
+        Me.pnlBottom.Height = 58
+        Me.pnlBottom.BackColor = Theme.CardBackground
+        Me.pnlBottom.Padding = New Padding(22, 0, 22, 0)
+        Me.pnlBottom.Controls.Add(Me.pnlBottomButtons)
+        Me.pnlBottom.Controls.Add(Me.lblStatusCount)
 
-        ' btnModifier
+        ' lblStatusCount
+        Me.lblStatusCount.Dock = DockStyle.Fill
+        Me.lblStatusCount.TextAlign = ContentAlignment.MiddleLeft
+        Me.lblStatusCount.ForeColor = Theme.Success
+        Me.lblStatusCount.Font = New Font(Theme.BodyFont, FontStyle.Bold)
+        Me.lblStatusCount.Text = String.Empty
+
+        ' pnlBottomButtons
+        Me.pnlBottomButtons.Dock = DockStyle.Right
+        Me.pnlBottomButtons.AutoSize = True
+        Me.pnlBottomButtons.WrapContents = False
+        Me.pnlBottomButtons.FlowDirection = FlowDirection.RightToLeft
+        Me.pnlBottomButtons.Padding = New Padding(0, 12, 0, 12)
         Me.btnModifier.AutoSize = True
+        Me.btnModifier.Height = 30
         Me.btnModifier.Text = "Modifier"
         Me.btnModifier.Enabled = False
-        Me.btnModifier.Margin = New Padding(3)
+        Me.btnModifier.Margin = New Padding(8, 0, 0, 0)
+        Theme.ApplyOutlineButton(Me.btnModifier)
 
-        ' btnSupprimer
         Me.btnSupprimer.AutoSize = True
+        Me.btnSupprimer.Height = 30
         Me.btnSupprimer.Text = "Supprimer"
         Me.btnSupprimer.Enabled = False
-        Me.btnSupprimer.Margin = New Padding(3)
+        Me.btnSupprimer.Margin = New Padding(8, 0, 0, 0)
+        Theme.ApplyDangerButton(Me.btnSupprimer)
 
-        ' btnApercu
         Me.btnApercu.AutoSize = True
+        Me.btnApercu.Height = 30
         Me.btnApercu.Text = "Aperçu"
         Me.btnApercu.Enabled = False
-        Me.btnApercu.Margin = New Padding(3)
+        Me.btnApercu.Margin = New Padding(8, 0, 0, 0)
+        Theme.ApplyPrimaryButton(Me.btnApercu)
 
-        ' ssStatus
-        Me.ssStatus.Dock = DockStyle.Bottom
-        Me.lblStatusCount.Text = String.Empty
-        Me.ssStatus.Items.Add(Me.lblStatusCount)
+        ' Order controls RightToLeft-flow so the visual order reads Modifier, Supprimer, Aperçu
+        ' (rightmost = Aperçu, matching the mockup) - first added ends up rightmost.
+        Me.pnlBottomButtons.Controls.Add(Me.btnApercu)
+        Me.pnlBottomButtons.Controls.Add(Me.btnSupprimer)
+        Me.pnlBottomButtons.Controls.Add(Me.btnModifier)
 
         ' Form1
         Me.AutoScaleMode = AutoScaleMode.Font
-        Me.ClientSize = New Size(1000, 600)
+        Me.BackColor = Theme.CardBackground
+        Me.ClientSize = New Size(1040, 700)
         Me.Text = "Eurocycles BikeSpec - Nomenclatures"
         Me.Controls.Add(Me.dgvNomenclatures)
         Me.Controls.Add(Me.pnlBottom)
-        Me.Controls.Add(Me.ssStatus)
         Me.Controls.Add(Me.pnlTop)
+        Me.Controls.Add(Theme.BuildHeaderStrip("BikeSpec — Nomenclatures"))
 
         CType(Me.bsNomenclatures, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.dgvNomenclatures, System.ComponentModel.ISupportInitialize).EndInit()
         Me.pnlTop.ResumeLayout(False)
         Me.pnlTop.PerformLayout()
+        Me.pnlBottomButtons.ResumeLayout(False)
+        Me.pnlBottomButtons.PerformLayout()
         Me.pnlBottom.ResumeLayout(False)
         Me.ResumeLayout(False)
     End Sub
 
     Friend WithEvents bsNomenclatures As BindingSource
     Friend WithEvents pnlTop As FlowLayoutPanel
-    Friend WithEvents lblSearch As Label
     Friend WithEvents txtSearch As TextBox
     Friend WithEvents btnSearch As Button
     Friend WithEvents btnNouveau As Button
     Friend WithEvents btnActualiser As Button
     Friend WithEvents dgvNomenclatures As DataGridView
-    Friend WithEvents pnlBottom As FlowLayoutPanel
+    Friend WithEvents pnlBottom As Panel
+    Friend WithEvents pnlBottomButtons As FlowLayoutPanel
     Friend WithEvents btnModifier As Button
     Friend WithEvents btnSupprimer As Button
     Friend WithEvents btnApercu As Button
-    Friend WithEvents ssStatus As StatusStrip
-    Friend WithEvents lblStatusCount As ToolStripStatusLabel
+    Friend WithEvents lblStatusCount As Label
 
 End Class

@@ -3,6 +3,7 @@ Public Class Form1
     Private ReadOnly _repository As New NomenclatureRepository()
 
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+        Theme.ApplyPlaceholder(txtSearch, "Rechercher : code, nom, marque…")
         dgvNomenclatures.DataSource = bsNomenclatures
         LoadAll()
     End Sub
