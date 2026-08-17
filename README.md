@@ -3,6 +3,11 @@
 A Windows desktop app (VB.NET, WinForms) for managing bike Nomenclature records,
 basically bills of materials for Eurocycles bikes. Backed by SQL Server LocalDB.
 
+## Demo
+
+[Demo.mp4](Demo.mp4) is a short video showing the app in use: browsing and
+searching the list, opening Aperçu, and creating/editing a Nomenclature.
+
 ## What you need
 
 - Windows 10 or 11
