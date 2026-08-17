@@ -4,10 +4,10 @@ Imports System.Reflection
 Imports System.Runtime.InteropServices
 
 ''' <summary>
-''' Central color/typography palette matching the Eurocycles brand design
-''' handoff (design_handoff_bikespec_ui/README.md). Keeps styling consistent
-''' across Form1, FormNomenclature, and FormApercu without duplicating hex
-''' values or re-deriving the same control styling in three places.
+''' Central color/typography palette for the Eurocycles brand (navy/yellow).
+''' Keeps styling consistent across Form1, FormNomenclature, and FormApercu
+''' without duplicating hex values or re-deriving the same control styling
+''' in three places.
 ''' </summary>
 Public Module Theme
 
