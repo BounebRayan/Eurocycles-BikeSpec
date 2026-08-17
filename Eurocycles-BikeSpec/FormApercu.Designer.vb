@@ -137,14 +137,14 @@ Partial Class FormApercu
 
         ' grpPhoto (photo card)
         Me.grpPhoto.Location = New Point(738, 10)
-        Me.grpPhoto.Size = New Size(220, 400)
+        Me.grpPhoto.Size = New Size(280, 400)
         Theme.ApplyCardStyle(Me.grpPhoto)
         Me.lblCardPhoto.Text = "Photo"
         Me.lblCardPhoto.AutoSize = True
         Me.lblCardPhoto.Location = New Point(16, 14)
         Theme.ApplySectionHeader(Me.lblCardPhoto)
         Me.picPhoto.Location = New Point(16, 44)
-        Me.picPhoto.Size = New Size(188, 188)
+        Me.picPhoto.Size = New Size(248, 220)
         Me.picPhoto.BorderStyle = BorderStyle.FixedSingle
         Me.picPhoto.SizeMode = PictureBoxSizeMode.Zoom
         Me.picPhoto.BackColor = Theme.ReadOnlyFill
@@ -248,18 +248,14 @@ Partial Class FormApercu
         Me.pnlBottom.Controls.Add(Me.btnModifier)
 
         ' FormApercu
+        ' Note: only ever shown embedded inside Form1's content panel - see FormNomenclature's
+        ' equivalent comment.
         Me.AutoScaleMode = AutoScaleMode.Font
         Me.BackColor = Theme.CardBackground
         Me.ClientSize = New Size(1040, 780)
-        Me.FormBorderStyle = FormBorderStyle.FixedDialog
-        Me.MaximizeBox = False
-        Me.MinimizeBox = False
-        Me.StartPosition = FormStartPosition.CenterParent
-        Me.CancelButton = Me.btnFermer
         Me.Controls.Add(Me.grpLignes)
         Me.Controls.Add(Me.pnlBottom)
         Me.Controls.Add(Me.pnlHeaderCards)
-        Me.Controls.Add(Theme.BuildHeaderStrip("Aperçu", Me.lblHeaderSubtitle))
 
         CType(Me.picPhoto, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.dgvLignes, System.ComponentModel.ISupportInitialize).EndInit()
@@ -284,7 +280,6 @@ Partial Class FormApercu
     End Sub
 
     Friend WithEvents pnlHeaderCards As Panel
-    Friend WithEvents lblHeaderSubtitle As Label
     Friend WithEvents cardIdentification As Panel
     Friend WithEvents lblCardIdentification As Label
     Friend WithEvents lblCode As Label

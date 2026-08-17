@@ -34,11 +34,15 @@ Partial Class Form1
         Dim colCouleur As New DataGridViewTextBoxColumn()
 
         Me.bsNomenclatures = New BindingSource(Me.components)
-        Me.pnlTop = New FlowLayoutPanel()
+
+        Me.pnlListView = New Panel()
+        Me.pnlTop = New Panel()
+        Me.pnlSearchGroup = New FlowLayoutPanel()
         Me.txtSearch = New TextBox()
         Me.btnSearch = New Button()
         Me.btnActualiser = New Button()
         Me.btnNouveau = New Button()
+        Me.pnlGridContainer = New Panel()
         Me.dgvNomenclatures = New DataGridView()
         Me.pnlBottom = New Panel()
         Me.lblStatusCount = New Label()
@@ -47,31 +51,44 @@ Partial Class Form1
         Me.btnSupprimer = New Button()
         Me.btnApercu = New Button()
 
+        Me.pnlContent = New Panel()
+
         CType(Me.bsNomenclatures, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.dgvNomenclatures, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.pnlListView.SuspendLayout()
         Me.pnlTop.SuspendLayout()
+        Me.pnlSearchGroup.SuspendLayout()
+        Me.pnlGridContainer.SuspendLayout()
         Me.pnlBottom.SuspendLayout()
         Me.pnlBottomButtons.SuspendLayout()
         Me.SuspendLayout()
 
-        ' pnlTop (search row)
+        ' pnlTop (search row) - search group docked left, Nouveau pinned to the right edge
         Me.pnlTop.Dock = DockStyle.Top
-        Me.pnlTop.AutoSize = True
+        Me.pnlTop.Height = 64
         Me.pnlTop.BackColor = Theme.CardBackground
-        Me.pnlTop.FlowDirection = FlowDirection.LeftToRight
-        Me.pnlTop.WrapContents = False
         Me.pnlTop.Padding = New Padding(22, 16, 22, 10)
-        Me.pnlTop.Controls.Add(Me.txtSearch)
-        Me.pnlTop.Controls.Add(Me.btnSearch)
-        Me.pnlTop.Controls.Add(Me.btnActualiser)
         Me.pnlTop.Controls.Add(Me.btnNouveau)
+        Me.pnlTop.Controls.Add(Me.pnlSearchGroup)
 
-        ' txtSearch
+        ' pnlSearchGroup
+        Me.pnlSearchGroup.Dock = DockStyle.Left
+        Me.pnlSearchGroup.AutoSize = True
+        Me.pnlSearchGroup.WrapContents = False
+        Me.pnlSearchGroup.FlowDirection = FlowDirection.LeftToRight
+        Me.pnlSearchGroup.Controls.Add(Me.txtSearch)
+        Me.pnlSearchGroup.Controls.Add(Me.btnSearch)
+        Me.pnlSearchGroup.Controls.Add(Me.btnActualiser)
+
+        ' txtSearch - Multiline so the explicit Height is honored (WinForms clamps a
+        ' single-line TextBox's height to its font, ignoring Height otherwise), so it can
+        ' match the buttons' height exactly. KeyDown already suppresses Enter's newline.
+        Me.txtSearch.Multiline = True
         Me.txtSearch.Width = 380
-        Me.txtSearch.Height = 24
+        Me.txtSearch.Height = 30
         Me.txtSearch.Font = Theme.BodyFont
         Me.txtSearch.BorderStyle = BorderStyle.FixedSingle
-        Me.txtSearch.Margin = New Padding(0, 2, 12, 3)
+        Me.txtSearch.Margin = New Padding(0, 0, 12, 0)
 
         ' btnSearch
         Me.btnSearch.AutoSize = True
@@ -84,15 +101,22 @@ Partial Class Form1
         Me.btnActualiser.AutoSize = True
         Me.btnActualiser.Height = 30
         Me.btnActualiser.Text = "Réinitialiser"
-        Me.btnActualiser.Margin = New Padding(0, 0, 8, 0)
+        Me.btnActualiser.Margin = New Padding(0)
         Theme.ApplyMutedButton(Me.btnActualiser)
 
-        ' btnNouveau
+        ' btnNouveau - pinned to the right edge of the search row, independent of the input group
+        Me.btnNouveau.Dock = DockStyle.Right
         Me.btnNouveau.AutoSize = True
         Me.btnNouveau.Height = 30
         Me.btnNouveau.Text = "+ Nouveau"
-        Me.btnNouveau.Margin = New Padding(0)
         Theme.ApplyPrimaryButton(Me.btnNouveau)
+
+        ' pnlGridContainer - same 22px x-padding as the search row, so the grid's left edge
+        ' lines up with the search input's left edge.
+        Me.pnlGridContainer.Dock = DockStyle.Fill
+        Me.pnlGridContainer.BackColor = Theme.CardBackground
+        Me.pnlGridContainer.Padding = New Padding(22, 0, 22, 16)
+        Me.pnlGridContainer.Controls.Add(Me.dgvNomenclatures)
 
         ' dgvNomenclatures
         Me.dgvNomenclatures.Dock = DockStyle.Fill
@@ -105,7 +129,6 @@ Partial Class Form1
         Me.dgvNomenclatures.MultiSelect = False
         Me.dgvNomenclatures.AutoGenerateColumns = False
         Me.dgvNomenclatures.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
-        Me.dgvNomenclatures.Margin = New Padding(22, 0, 22, 0)
         Theme.ApplyGridStyle(Me.dgvNomenclatures)
 
         colCode.Name = "colCode"
@@ -153,10 +176,10 @@ Partial Class Form1
         Me.pnlBottom.Controls.Add(Me.pnlBottomButtons)
         Me.pnlBottom.Controls.Add(Me.lblStatusCount)
 
-        ' lblStatusCount
+        ' lblStatusCount - navy, to match the app's branding (not the mockup's green token)
         Me.lblStatusCount.Dock = DockStyle.Fill
         Me.lblStatusCount.TextAlign = ContentAlignment.MiddleLeft
-        Me.lblStatusCount.ForeColor = Theme.Success
+        Me.lblStatusCount.ForeColor = Theme.Navy
         Me.lblStatusCount.Font = New Font(Theme.BodyFont, FontStyle.Bold)
         Me.lblStatusCount.Text = String.Empty
 
@@ -193,33 +216,51 @@ Partial Class Form1
         Me.pnlBottomButtons.Controls.Add(Me.btnSupprimer)
         Me.pnlBottomButtons.Controls.Add(Me.btnModifier)
 
+        ' pnlListView - everything above, as one swappable unit
+        Me.pnlListView.Dock = DockStyle.Fill
+        Me.pnlListView.Visible = True
+        Me.pnlListView.Controls.Add(Me.pnlGridContainer)
+        Me.pnlListView.Controls.Add(Me.pnlBottom)
+        Me.pnlListView.Controls.Add(Me.pnlTop)
+
+        ' pnlContent - hosts an embedded FormNomenclature/FormApercu in place of the list view.
+        ' Hidden until Form1.vb's navigation code embeds something into it.
+        Me.pnlContent.Dock = DockStyle.Fill
+        Me.pnlContent.Visible = False
+        Me.pnlContent.BackColor = Theme.CardBackground
+
         ' Form1
         Me.AutoScaleMode = AutoScaleMode.Font
         Me.BackColor = Theme.CardBackground
         Me.ClientSize = New Size(1040, 700)
         Me.Text = "Eurocycles BikeSpec - Nomenclatures"
-        Dim unusedHeaderLabel As Label = Nothing
-        Me.Controls.Add(Me.dgvNomenclatures)
-        Me.Controls.Add(Me.pnlBottom)
-        Me.Controls.Add(Me.pnlTop)
-        Me.Controls.Add(Theme.BuildHeaderStrip("BikeSpec — Nomenclatures", unusedHeaderLabel))
+        Me.Controls.Add(Me.pnlContent)
+        Me.Controls.Add(Me.pnlListView)
+        Me.Controls.Add(Theme.BuildHeaderStrip("BikeSpec — Nomenclatures", Me.lblHeaderSubtitle))
 
         CType(Me.bsNomenclatures, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.dgvNomenclatures, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.pnlSearchGroup.ResumeLayout(False)
+        Me.pnlSearchGroup.PerformLayout()
         Me.pnlTop.ResumeLayout(False)
-        Me.pnlTop.PerformLayout()
+        Me.pnlGridContainer.ResumeLayout(False)
         Me.pnlBottomButtons.ResumeLayout(False)
         Me.pnlBottomButtons.PerformLayout()
         Me.pnlBottom.ResumeLayout(False)
+        Me.pnlListView.ResumeLayout(False)
         Me.ResumeLayout(False)
     End Sub
 
     Friend WithEvents bsNomenclatures As BindingSource
-    Friend WithEvents pnlTop As FlowLayoutPanel
+    Friend WithEvents lblHeaderSubtitle As Label
+    Friend WithEvents pnlListView As Panel
+    Friend WithEvents pnlTop As Panel
+    Friend WithEvents pnlSearchGroup As FlowLayoutPanel
     Friend WithEvents txtSearch As TextBox
     Friend WithEvents btnSearch As Button
     Friend WithEvents btnNouveau As Button
     Friend WithEvents btnActualiser As Button
+    Friend WithEvents pnlGridContainer As Panel
     Friend WithEvents dgvNomenclatures As DataGridView
     Friend WithEvents pnlBottom As Panel
     Friend WithEvents pnlBottomButtons As FlowLayoutPanel
@@ -227,5 +268,6 @@ Partial Class Form1
     Friend WithEvents btnSupprimer As Button
     Friend WithEvents btnApercu As Button
     Friend WithEvents lblStatusCount As Label
+    Friend WithEvents pnlContent As Panel
 
 End Class

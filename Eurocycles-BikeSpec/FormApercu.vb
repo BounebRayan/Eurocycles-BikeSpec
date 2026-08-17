@@ -12,13 +12,25 @@ Public Class FormApercu
     Private WithEvents _printDocument As New PrintDocument()
     Private _printLineIndex As Integer
 
+    ''' <summary>The record being previewed - exposed so the host (Form1) can open an editor
+    ''' for it when Modifier is clicked without this form needing to know about FormNomenclature.</summary>
+    Public ReadOnly Property Nomenclature As Nomenclature
+        Get
+            Return _nomenclature
+        End Get
+    End Property
+
+    ''' <summary>Raised when the user clicks Modifier: the host is responsible for showing an
+    ''' editor for this record - this form is only ever embedded, never opens another top-level
+    ''' window itself.</summary>
+    Public Event ModifierRequested As EventHandler
+
     Public Sub New(nomenclature As Nomenclature, lignes As List(Of LigneNomenclature))
         InitializeComponent()
         If nomenclature Is Nothing Then Throw New ArgumentNullException(NameOf(nomenclature))
         _nomenclature = nomenclature
         _lignes = If(lignes, New List(Of LigneNomenclature)())
         Me.Text = $"Aperçu - {nomenclature.Code}"
-        lblHeaderSubtitle.Text = $"Aperçu — {nomenclature.Code}"
     End Sub
 
     Private Sub FormApercu_Load(sender As Object, e As EventArgs) Handles MyBase.Load
@@ -52,12 +64,8 @@ Public Class FormApercu
     End Sub
 
     Private Sub btnModifier_Click(sender As Object, e As EventArgs) Handles btnModifier.Click
-        Using form As New FormNomenclature(_nomenclature)
-            If form.ShowDialog(Me) = DialogResult.OK Then
-                ' The record just changed under us - close rather than show stale data.
-                Me.Close()
-            End If
-        End Using
+        RaiseEvent ModifierRequested(Me, EventArgs.Empty)
+        Me.Close()
     End Sub
 
     Private Sub btnImprimer_Click(sender As Object, e As EventArgs) Handles btnImprimer.Click

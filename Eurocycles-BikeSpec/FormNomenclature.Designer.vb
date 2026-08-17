@@ -144,25 +144,25 @@ Partial Class FormNomenclature
         Me.cboTypeDecor.Items.AddRange(AllowedValues.TypeDecors)
         Theme.AddField(Me.cardTechnique, Me.lblTypeDecor, "Type décor", Me.cboTypeDecor, 16, yTech, 304)
 
-        ' grpPhoto (photo card)
+        ' grpPhoto (photo card - widened to absorb the leftover width right of the other two cards)
         Me.grpPhoto.Location = New Point(738, 10)
-        Me.grpPhoto.Size = New Size(220, 400)
+        Me.grpPhoto.Size = New Size(280, 400)
         Theme.ApplyCardStyle(Me.grpPhoto)
         Me.lblCardPhoto.Text = "Photo"
         Me.lblCardPhoto.AutoSize = True
         Me.lblCardPhoto.Location = New Point(16, 14)
         Theme.ApplySectionHeader(Me.lblCardPhoto)
         Me.picPhoto.Location = New Point(16, 44)
-        Me.picPhoto.Size = New Size(188, 188)
+        Me.picPhoto.Size = New Size(248, 220)
         Me.picPhoto.BorderStyle = BorderStyle.FixedSingle
         Me.picPhoto.SizeMode = PictureBoxSizeMode.Zoom
         Me.picPhoto.BackColor = Theme.ReadOnlyFill
-        Me.btnChargerPhoto.Location = New Point(16, 242)
-        Me.btnChargerPhoto.Size = New Size(188, 32)
+        Me.btnChargerPhoto.Location = New Point(16, 274)
+        Me.btnChargerPhoto.Size = New Size(248, 32)
         Me.btnChargerPhoto.Text = "Choisir photo..."
         Theme.ApplyOutlineButton(Me.btnChargerPhoto)
-        Me.btnSupprimerPhoto.Location = New Point(16, 280)
-        Me.btnSupprimerPhoto.Size = New Size(188, 32)
+        Me.btnSupprimerPhoto.Location = New Point(16, 312)
+        Me.btnSupprimerPhoto.Size = New Size(248, 32)
         Me.btnSupprimerPhoto.Text = "Supprimer"
         Theme.ApplyMutedButton(Me.btnSupprimerPhoto)
         Me.grpPhoto.Controls.Add(Me.lblCardPhoto)
@@ -295,19 +295,16 @@ Partial Class FormNomenclature
         Me.pnlBottom.Controls.Add(Me.btnApercu)
 
         ' FormNomenclature
+        ' Note: this form is only ever shown embedded inside Form1's content panel (never as its
+        ' own top-level window), so FormBorderStyle/StartPosition/AcceptButton/CancelButton are
+        ' intentionally not set here - Form1 owns the single navy header strip and the window
+        ' chrome; embedding overrides FormBorderStyle/TopLevel/Dock at the point of embedding.
         Me.AutoScaleMode = AutoScaleMode.Font
         Me.BackColor = Theme.CardBackground
         Me.ClientSize = New Size(1040, 780)
-        Me.FormBorderStyle = FormBorderStyle.FixedDialog
-        Me.MaximizeBox = False
-        Me.MinimizeBox = False
-        Me.StartPosition = FormStartPosition.CenterParent
-        Me.AcceptButton = Me.btnEnregistrer
-        Me.CancelButton = Me.btnAnnuler
         Me.Controls.Add(Me.grpLignes)
         Me.Controls.Add(Me.pnlBottom)
         Me.Controls.Add(Me.pnlHeaderCards)
-        Me.Controls.Add(Theme.BuildHeaderStrip("Nouvelle nomenclature", Me.lblHeaderSubtitle))
 
         CType(Me.errorProvider, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.picPhoto, System.ComponentModel.ISupportInitialize).EndInit()
@@ -329,7 +326,6 @@ Partial Class FormNomenclature
     End Sub
 
     Friend WithEvents errorProvider As ErrorProvider
-    Friend WithEvents lblHeaderSubtitle As Label
     Friend WithEvents pnlHeaderCards As Panel
     Friend WithEvents cardIdentification As Panel
     Friend WithEvents lblCardIdentification As Label

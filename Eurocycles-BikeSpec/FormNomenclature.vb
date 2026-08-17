@@ -11,12 +11,16 @@ Public Class FormNomenclature
     Private _lignes As BindingList(Of LigneNomenclature)
     Private _isDirty As Boolean
 
+    ''' <summary>Raised when the user clicks Aperçu: the host (Form1) is responsible for
+    ''' building/showing the preview - this form is only ever embedded, never opens another
+    ''' top-level window itself.</summary>
+    Public Event PreviewRequested As EventHandler
+
     Public Sub New()
         InitializeComponent()
         _isNewMode = True
         _nomenclature = New Nomenclature With {.Date = DateTime.Today}
         Me.Text = "Nouvelle nomenclature"
-        lblHeaderSubtitle.Text = "Nouvelle nomenclature"
     End Sub
 
     Public Sub New(nomenclature As Nomenclature)
@@ -25,7 +29,6 @@ Public Class FormNomenclature
         _isNewMode = False
         _nomenclature = CloneNomenclature(nomenclature)
         Me.Text = $"Modifier nomenclature - {nomenclature.Code}"
-        lblHeaderSubtitle.Text = $"Modifier nomenclature — {nomenclature.Code}"
     End Sub
 
     Private Shared Function CloneNomenclature(source As Nomenclature) As Nomenclature
@@ -372,17 +375,18 @@ Public Class FormNomenclature
         Me.Close()
     End Sub
 
-    Private Sub btnApercu_Click(sender As Object, e As EventArgs) Handles btnApercu.Click
+    ''' <summary>Builds an up-to-date snapshot from whatever is currently entered (even if not
+    ''' yet saved) for the host to hand to FormApercu. Public because Form1 calls it in response
+    ''' to PreviewRequested; this form never creates FormApercu itself.</summary>
+    Public Function BuildPreviewSnapshot() As Nomenclature
         dgvLignes.EndEdit()
-
-        ' Preview reflects whatever is currently entered, even if not yet saved.
         ApplyFormToNomenclature()
-        Dim lines = _lignes.ToList()
-        _nomenclature.Lignes = lines
+        _nomenclature.Lignes = _lignes.ToList()
+        Return _nomenclature
+    End Function
 
-        Using form As New FormApercu(_nomenclature, lines)
-            form.ShowDialog(Me)
-        End Using
+    Private Sub btnApercu_Click(sender As Object, e As EventArgs) Handles btnApercu.Click
+        RaiseEvent PreviewRequested(Me, EventArgs.Empty)
     End Sub
 
 End Class

@@ -70,7 +70,8 @@ Public Module Theme
         ApplyOutlineButton(button, Danger)
     End Sub
 
-    ''' <summary>Navy header row, white bold header text, navy/white inverted selected-row highlight.</summary>
+    ''' <summary>Navy header row, white bold header text, a distinct (lighter) navy for the
+    ''' selected-row highlight so it doesn't visually blend with the header row above it.</summary>
     Public Sub ApplyGridStyle(grid As DataGridView)
         grid.BackgroundColor = CardBackground
         grid.BorderStyle = BorderStyle.FixedSingle
@@ -87,7 +88,7 @@ Public Module Theme
         grid.DefaultCellStyle.BackColor = CardBackground
         grid.DefaultCellStyle.ForeColor = Navy
         grid.DefaultCellStyle.Font = BodyFont
-        grid.DefaultCellStyle.SelectionBackColor = Navy
+        grid.DefaultCellStyle.SelectionBackColor = NavyHover
         grid.DefaultCellStyle.SelectionForeColor = Color.White
         grid.DefaultCellStyle.Padding = New Padding(4, 2, 4, 2)
         grid.AlternatingRowsDefaultCellStyle.BackColor = CardBackground
