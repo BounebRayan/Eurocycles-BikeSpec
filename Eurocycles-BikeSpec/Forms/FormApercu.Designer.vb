@@ -80,12 +80,13 @@ Partial Class FormApercu
 
         ' pnlHeaderCards
         Me.pnlHeaderCards.Dock = DockStyle.Top
-        Me.pnlHeaderCards.Height = 420
+        Me.pnlHeaderCards.Height = 370 ' just tall enough for the cards' actual content (see their
+        ' Size below), so grpLignes' Dock=Fill gets the space back
         Me.pnlHeaderCards.BackColor = Theme.CardBackground
 
         ' cardIdentification
         Me.cardIdentification.Location = New Point(22, 10)
-        Me.cardIdentification.Size = New Size(340, 400)
+        Me.cardIdentification.Size = New Size(340, 355)
         Theme.ApplyCardStyle(Me.cardIdentification)
         Me.lblCardIdentification.Text = "Identification"
         Me.lblCardIdentification.AutoSize = True
@@ -106,7 +107,7 @@ Partial Class FormApercu
 
         ' cardTechnique
         Me.cardTechnique.Location = New Point(380, 10)
-        Me.cardTechnique.Size = New Size(340, 400)
+        Me.cardTechnique.Size = New Size(340, 355)
         Theme.ApplyCardStyle(Me.cardTechnique)
         Me.lblCardTechnique.Text = "Caractéristiques techniques"
         Me.lblCardTechnique.AutoSize = True
@@ -137,7 +138,7 @@ Partial Class FormApercu
 
         ' grpPhoto (photo card)
         Me.grpPhoto.Location = New Point(738, 10)
-        Me.grpPhoto.Size = New Size(280, 400)
+        Me.grpPhoto.Size = New Size(280, 355)
         Theme.ApplyCardStyle(Me.grpPhoto)
         Me.lblCardPhoto.Text = "Photo"
         Me.lblCardPhoto.AutoSize = True
@@ -189,26 +190,25 @@ Partial Class FormApercu
         }
         colQuantite.DefaultCellStyle.Format = "N2"
         colQuantite.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight
+        ' Prix carries its currency's symbol directly (set in FormApercu's CellFormatting
+        ' handler via CurrencyFormatter) - no separate Devise column, so no DefaultCellStyle
+        ' .Format here; the handler supplies the full display string.
         Dim colPrix As New DataGridViewTextBoxColumn() With {
-            .Name = "colPrix", .HeaderText = "Prix", .DataPropertyName = "Prix", .FillWeight = 11
+            .Name = "colPrix", .HeaderText = "Prix", .DataPropertyName = "Prix", .FillWeight = 16
         }
-        colPrix.DefaultCellStyle.Format = "N3"
         colPrix.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight
         Dim colFabricant As New DataGridViewTextBoxColumn() With {
-            .Name = "colFabricant", .HeaderText = "Fabricant", .DataPropertyName = "Fabricant", .FillWeight = 16
+            .Name = "colFabricant", .HeaderText = "Fabricant", .DataPropertyName = "Fabricant", .FillWeight = 17
         }
         Dim colImprime As New DataGridViewCheckBoxColumn() With {
             .Name = "colImprime", .HeaderText = "Imprimé", .DataPropertyName = "Imprime", .FillWeight = 8
         }
-        Dim colDevise As New DataGridViewTextBoxColumn() With {
-            .Name = "colDevise", .HeaderText = "Devise", .DataPropertyName = "Devise", .FillWeight = 8
-        }
         Dim colObservation As New DataGridViewTextBoxColumn() With {
-            .Name = "colObservation", .HeaderText = "Observation", .DataPropertyName = "Observation", .FillWeight = 22
+            .Name = "colObservation", .HeaderText = "Observation", .DataPropertyName = "Observation", .FillWeight = 24
         }
 
         Me.dgvLignes.Columns.AddRange(New DataGridViewColumn() {
-            colDesignation, colQuantite, colPrix, colDevise, colFabricant, colImprime, colObservation
+            colDesignation, colQuantite, colPrix, colFabricant, colImprime, colObservation
         })
 
         ' pnlBottom (footer: total text left, action buttons right - one row, matching FormListe)
@@ -239,7 +239,7 @@ Partial Class FormApercu
         Me.btnFermer.Height = 32
         Me.btnFermer.Text = "Fermer"
         Me.btnFermer.Margin = New Padding(8, 0, 0, 0)
-        Theme.ApplyMutedButton(Me.btnFermer)
+        Theme.ApplyDangerButton(Me.btnFermer)
         Me.btnModifier.AutoSize = True
         Me.btnModifier.Height = 32
         Me.btnModifier.Text = "Modifier"

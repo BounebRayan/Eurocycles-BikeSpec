@@ -1,9 +1,10 @@
 Imports System.Linq
 
 ''' <summary>
-''' Computes BOM line totals (Quantite * Prix, summed) grouped by Devise.
-''' Shared by FormNomenclature (live totals while editing) and FormApercu
-''' (totals on the printable sheet) so both show the same numbers.
+''' Computes BOM line totals (Quantite * Prix, summed) grouped by Devise. Used by
+''' CurrencyFormatter.FormatTotals, which both FormNomenclature (live totals while editing)
+''' and FormApercu (totals on the printable sheet) call to render those totals, so both
+''' show the same numbers in the same currency-formatted style.
 ''' </summary>
 Public Module LigneTotalsCalculator
 
@@ -13,16 +14,6 @@ Public Module LigneTotalsCalculator
             Select(Function(g) (Devise:=g.Key, Total:=g.Sum(Function(l) l.Quantite * l.Prix))).
             OrderBy(Function(t) t.Devise).
             ToList()
-    End Function
-
-    ''' <summary>Formats totals as e.g. "Total : 125.500 Euro · 40.000 USD", or an empty string
-    ''' when there are no lines (nothing shown, rather than a placeholder message). Uses 3
-    ''' decimals uniformly (matching Prix's DECIMAL(10,3) scale) rather than varying by currency.</summary>
-    Public Function FormatTotals(lines As IEnumerable(Of LigneNomenclature)) As String
-        Dim totals = ComputeTotals(lines)
-        If totals.Count = 0 Then Return String.Empty
-
-        Return "Total : " & String.Join(" · ", totals.Select(Function(t) $"{t.Total:N3} {t.Devise}"))
     End Function
 
 End Module

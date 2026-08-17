@@ -11,63 +11,61 @@ Imports Microsoft.Data.SqlClient
 ''' </summary>
 Public Class NomenclatureRepository
 
-    ''' <summary>Returns all Nomenclature headers, without their lines.</summary>
-    Public Function GetAll() As List(Of Nomenclature)
-        Dim results As New List(Of Nomenclature)
-
-        Const sql As String = "
-            SELECT Code, Nom, Date, Marque, GenCode, NW, GW, Modele,
-                   FrameSize, WheelSize, RefCustomer, Couleur, TypeDecor, Photo
-            FROM Nomenclature
-            ORDER BY Code;"
-
-        Try
-            Using connection = DatabaseHelper.CreateConnection()
-                Using command As New SqlCommand(sql, connection)
-                    connection.Open()
-                    Using reader = command.ExecuteReader()
-                        While reader.Read()
-                            results.Add(MapHeader(reader))
-                        End While
-                    End Using
-                End Using
-            End Using
-        Catch ex As SqlException
-            Throw New DataAccessException("Impossible de charger la liste des nomenclatures.", ex)
-        End Try
-
-        Return results
+    ''' <summary>Returns one page of Nomenclature headers (without their lines or Photo - see
+    ''' MapHeaderNoPhoto), ordered by Code, plus the total row count across all pages so the
+    ''' caller can compute how many pages exist. pageNumber is 1-based.</summary>
+    Public Function GetPage(pageNumber As Integer, pageSize As Integer) As (Items As List(Of Nomenclature), TotalCount As Integer)
+        Return GetPageInternal(Nothing, pageNumber, pageSize)
     End Function
 
-    ''' <summary>Returns Nomenclature headers whose Code, Nom, or Marque matches the search term.</summary>
-    Public Function Search(searchTerm As String) As List(Of Nomenclature)
-        Dim results As New List(Of Nomenclature)
+    ''' <summary>Same as GetPage, but restricted to Nomenclature headers whose Code, Nom, or
+    ''' Marque matches searchTerm.</summary>
+    Public Function SearchPage(searchTerm As String, pageNumber As Integer, pageSize As Integer) As (Items As List(Of Nomenclature), TotalCount As Integer)
+        Return GetPageInternal(searchTerm, pageNumber, pageSize)
+    End Function
 
-        Const sql As String = "
+    ''' <summary>Shared implementation for GetPage/SearchPage: searchTerm = Nothing means no
+    ''' WHERE filter (GetPage's case). Uses COUNT(*) OVER() to get the total row count in the
+    ''' same round trip as the page's rows, rather than a separate COUNT(*) query.</summary>
+    Private Function GetPageInternal(searchTerm As String, pageNumber As Integer, pageSize As Integer) As (Items As List(Of Nomenclature), TotalCount As Integer)
+        Dim results As New List(Of Nomenclature)
+        Dim totalCount = 0
+        Dim offset = Math.Max(0, pageNumber - 1) * pageSize
+
+        Dim whereClause = If(searchTerm Is Nothing, "", "WHERE Code LIKE @Term OR Nom LIKE @Term OR Marque LIKE @Term")
+        Dim sql As String = $"
             SELECT Code, Nom, Date, Marque, GenCode, NW, GW, Modele,
-                   FrameSize, WheelSize, RefCustomer, Couleur, TypeDecor, Photo
+                   FrameSize, WheelSize, RefCustomer, Couleur, TypeDecor,
+                   COUNT(*) OVER() AS TotalCount
             FROM Nomenclature
-            WHERE Code LIKE @Term OR Nom LIKE @Term OR Marque LIKE @Term
-            ORDER BY Code;"
+            {whereClause}
+            ORDER BY Code
+            OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY;"
 
         Try
-            Dim safeTerm = searchTerm.Replace("[", "[[]").Replace("%", "[%]").Replace("_", "[_]")
             Using connection = DatabaseHelper.CreateConnection()
                 Using command As New SqlCommand(sql, connection)
-                    command.Parameters.AddWithValue("@Term", "%" & safeTerm & "%")
+                    If searchTerm IsNot Nothing Then
+                        Dim safeTerm = searchTerm.Replace("[", "[[]").Replace("%", "[%]").Replace("_", "[_]")
+                        command.Parameters.AddWithValue("@Term", "%" & safeTerm & "%")
+                    End If
+                    command.Parameters.AddWithValue("@Offset", offset)
+                    command.Parameters.AddWithValue("@PageSize", pageSize)
                     connection.Open()
                     Using reader = command.ExecuteReader()
                         While reader.Read()
-                            results.Add(MapHeader(reader))
+                            results.Add(MapHeaderNoPhoto(reader))
+                            If totalCount = 0 Then totalCount = reader.GetInt32(reader.GetOrdinal("TotalCount"))
                         End While
                     End Using
                 End Using
             End Using
         Catch ex As SqlException
-            Throw New DataAccessException("Impossible de rechercher les nomenclatures.", ex)
+            Dim message = If(searchTerm Is Nothing, "Impossible de charger la liste des nomenclatures.", "Impossible de rechercher les nomenclatures.")
+            Throw New DataAccessException(message, ex)
         End Try
 
-        Return results
+        Return (results, totalCount)
     End Function
 
     ''' <summary>Returns one Nomenclature by Code, with its Lignes populated. Nothing if not found.</summary>
@@ -290,6 +288,29 @@ Public Class NomenclatureRepository
             .Couleur = GetNullableString(reader, "Couleur"),
             .TypeDecor = GetNullableString(reader, "TypeDecor"),
             .Photo = GetNullableBytes(reader, "Photo")
+        }
+    End Function
+
+    ''' <summary>Same as MapHeader, minus Photo - used for GetPage/SearchPage's list rows, which
+    ''' don't have a Photo column in their SELECT (see GetPageInternal) since the list grid never
+    ''' displays it and shipping VARBINARY(MAX) blobs for every row on every page load would be
+    ''' wasteful. FormNomenclature re-fetches the full record (via GetByCode) before editing, so
+    ''' this never causes Photo to be silently dropped when a record is saved.</summary>
+    Private Shared Function MapHeaderNoPhoto(reader As SqlDataReader) As Nomenclature
+        Return New Nomenclature With {
+            .Code = reader.GetString(reader.GetOrdinal("Code")),
+            .Nom = reader.GetString(reader.GetOrdinal("Nom")),
+            .Date = reader.GetDateTime(reader.GetOrdinal("Date")),
+            .Marque = GetNullableString(reader, "Marque"),
+            .GenCode = GetNullableString(reader, "GenCode"),
+            .NW = GetNullableDecimal(reader, "NW"),
+            .GW = GetNullableDecimal(reader, "GW"),
+            .Modele = GetNullableString(reader, "Modele"),
+            .FrameSize = GetNullableString(reader, "FrameSize"),
+            .WheelSize = GetNullableString(reader, "WheelSize"),
+            .RefCustomer = GetNullableString(reader, "RefCustomer"),
+            .Couleur = GetNullableString(reader, "Couleur"),
+            .TypeDecor = GetNullableString(reader, "TypeDecor")
         }
     End Function
 

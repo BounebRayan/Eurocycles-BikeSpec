@@ -94,12 +94,14 @@ Partial Class FormNomenclature
 
         ' pnlHeaderCards (contains the 3 side-by-side cards)
         Me.pnlHeaderCards.Dock = DockStyle.Top
-        Me.pnlHeaderCards.Height = 420
+        Me.pnlHeaderCards.Height = 370 ' matches FormApercu's tightened header-card height (see its
+                                        ' comment) - 10px taller since grpPhoto here also has the
+                                        ' Choisir/Supprimer buttons Apercu's read-only photo card doesn't
         Me.pnlHeaderCards.BackColor = Theme.CardBackground
 
         ' cardIdentification
         Me.cardIdentification.Location = New Point(22, 10)
-        Me.cardIdentification.Size = New Size(340, 400)
+        Me.cardIdentification.Size = New Size(340, 355)
         Theme.ApplyCardStyle(Me.cardIdentification)
         Me.lblCardIdentification.Text = "Identification"
         Me.lblCardIdentification.AutoSize = True
@@ -115,7 +117,7 @@ Partial Class FormNomenclature
 
         ' cardTechnique
         Me.cardTechnique.Location = New Point(380, 10)
-        Me.cardTechnique.Size = New Size(340, 400)
+        Me.cardTechnique.Size = New Size(340, 355)
         Theme.ApplyCardStyle(Me.cardTechnique)
         Me.lblCardTechnique.Text = "Caractéristiques techniques"
         Me.lblCardTechnique.AutoSize = True
@@ -146,7 +148,7 @@ Partial Class FormNomenclature
 
         ' grpPhoto (photo card - widened to absorb the leftover width right of the other two cards)
         Me.grpPhoto.Location = New Point(738, 10)
-        Me.grpPhoto.Size = New Size(280, 400)
+        Me.grpPhoto.Size = New Size(280, 355)
         Theme.ApplyCardStyle(Me.grpPhoto)
         Me.lblCardPhoto.Text = "Photo"
         Me.lblCardPhoto.AutoSize = True

@@ -52,7 +52,19 @@ Public Class FormApercu
 
         dgvLignes.DataSource = _lignes
         lblLignesTitle.Text = $"Lignes de la nomenclature ({_lignes.Count})"
-        lblTotaux.Text = LigneTotalsCalculator.FormatTotals(_lignes)
+        lblTotaux.Text = CurrencyFormatter.FormatTotals(_lignes)
+    End Sub
+
+    ''' <summary>Renders Prix with its line's currency symbol/formatting (CurrencyFormatter)
+    ''' instead of the raw decimal, since this read-only grid has no separate Devise column.</summary>
+    Private Sub dgvLignes_CellFormatting(sender As Object, e As DataGridViewCellFormattingEventArgs) Handles dgvLignes.CellFormatting
+        If dgvLignes.Columns(e.ColumnIndex).Name <> "colPrix" Then Return
+
+        Dim line = TryCast(dgvLignes.Rows(e.RowIndex).DataBoundItem, LigneNomenclature)
+        If line Is Nothing Then Return
+
+        e.Value = CurrencyFormatter.FormatAmount(line.Prix, line.Devise)
+        e.FormattingApplied = True
     End Sub
 
     Private Sub FormApercu_FormClosed(sender As Object, e As FormClosedEventArgs) Handles Me.FormClosed
@@ -125,7 +137,7 @@ Public Class FormApercu
             End While
 
             y += 6
-            g.DrawString(LigneTotalsCalculator.FormatTotals(_lignes), totalsFont, Brushes.Black, left, y)
+            g.DrawString(CurrencyFormatter.FormatTotals(_lignes), totalsFont, Brushes.Black, left, y)
         End Using
 
         e.HasMorePages = False
@@ -178,8 +190,10 @@ Public Class FormApercu
     End Function
 
     Private Function BuildColumnLayout(left As Single, totalWidth As Integer) As List(Of (Header As String, X As Single, Width As Single))
-        Dim headers = New String() {"Désignation", "Qté", "Prix", "Devise", "Fabricant", "Imprimé", "Observation"}
-        Dim weights = New Single() {0.26F, 0.09F, 0.11F, 0.08F, 0.16F, 0.08F, 0.22F}
+        ' Prix carries its currency's symbol directly (CurrencyFormatter) - no separate
+        ' Devise column, matching the on-screen grid in FormApercu.Designer.vb.
+        Dim headers = New String() {"Désignation", "Qté", "Prix", "Fabricant", "Imprimé", "Observation"}
+        Dim weights = New Single() {0.26F, 0.09F, 0.16F, 0.17F, 0.08F, 0.24F}
 
         Dim result As New List(Of (Header As String, X As Single, Width As Single))
         Dim x = left
@@ -201,8 +215,7 @@ Public Class FormApercu
             values = New String() {
                 line.Designation,
                 line.Quantite.ToString("N2"),
-                line.Prix.ToString("N3"),
-                line.Devise,
+                CurrencyFormatter.FormatAmount(line.Prix, line.Devise),
                 NullableConverter.FormatOrDash(line.Fabricant),
                 If(line.Imprime, "Oui", "Non"),
                 NullableConverter.FormatOrDash(line.Observation)

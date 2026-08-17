@@ -51,20 +51,46 @@ Public Class FormNomenclature
         }
     End Function
 
-    Private Sub FormNomenclature_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-        PopulateForm()
+    ''' <summary>Overwrites target's editable header fields (everything but Code) with source's -
+    ''' used in Load to refresh _nomenclature with the DB's current values, crucially Photo,
+    ''' before the form displays or later saves them. See the Load comment for why.</summary>
+    Private Shared Sub CopyHeaderFields(source As Nomenclature, target As Nomenclature)
+        target.Nom = source.Nom
+        target.Date = source.Date
+        target.Marque = source.Marque
+        target.GenCode = source.GenCode
+        target.NW = source.NW
+        target.GW = source.GW
+        target.Modele = source.Modele
+        target.FrameSize = source.FrameSize
+        target.WheelSize = source.WheelSize
+        target.RefCustomer = source.RefCustomer
+        target.Couleur = source.Couleur
+        target.TypeDecor = source.TypeDecor
+        target.Photo = source.Photo
+    End Sub
 
+    Private Sub FormNomenclature_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         Dim lines As List(Of LigneNomenclature) = Nothing
-        If _isNewMode Then
-            lines = New List(Of LigneNomenclature)()
-        Else
+
+        If Not _isNewMode Then
+            ' Re-fetch the full record from the DB rather than trusting whatever header fields the
+            ' caller passed in: the list grid's rows (NomenclatureRepository.GetPage/SearchPage)
+            ' never carry Photo, so relying on the passed-in object here would silently blank out
+            ' - and then, on Enregistrer, permanently delete - the record's existing photo.
             Try
-                lines = _repository.GetByCode(_nomenclature.Code)?.Lignes
+                Dim fresh = _repository.GetByCode(_nomenclature.Code)
+                If fresh IsNot Nothing Then
+                    CopyHeaderFields(fresh, _nomenclature)
+                    lines = fresh.Lignes
+                End If
             Catch ex As DataAccessException
                 MessageBox.Show(ex.Message, "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error)
             End Try
-            If lines Is Nothing Then lines = New List(Of LigneNomenclature)()
         End If
+
+        PopulateForm()
+        If lines Is Nothing Then lines = New List(Of LigneNomenclature)()
 
         _lignes = New BindingList(Of LigneNomenclature)(lines)
         dgvLignes.DataSource = _lignes
@@ -96,7 +122,7 @@ Public Class FormNomenclature
     End Sub
 
     Private Sub RefreshTotals()
-        lblTotaux.Text = LigneTotalsCalculator.FormatTotals(_lignes)
+        lblTotaux.Text = CurrencyFormatter.FormatTotals(_lignes)
         lblLignesTitle.Text = $"Lignes de la nomenclature ({_lignes.Count})"
     End Sub
 
@@ -160,6 +186,15 @@ Public Class FormNomenclature
 
             If dialog.ShowDialog(Me) <> DialogResult.OK Then Return
 
+            ' Checked against the file on disk before reading it into memory, so an oversized
+            ' file never gets fully loaded just to be rejected a moment later.
+            Dim fileSize = New FileInfo(dialog.FileName).Length
+            If fileSize > PhotoHelper.MaxPhotoSizeBytes Then
+                MessageBox.Show($"Le fichier sélectionné dépasse la taille maximale autorisée ({PhotoHelper.MaxPhotoSizeBytes \ (1024 * 1024)} Mo).",
+                                 "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                Return
+            End If
+
             Dim bytes As Byte()
             Try
                 bytes = File.ReadAllBytes(dialog.FileName)
@@ -170,7 +205,7 @@ Public Class FormNomenclature
             End Try
 
             If PhotoHelper.TryLoadImage(bytes) Is Nothing Then
-                MessageBox.Show("Le fichier sélectionné n'est pas une image valide.",
+                MessageBox.Show("Le fichier sélectionné n'est pas une image valide (formats acceptés : PNG, JPEG, BMP).",
                                  "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error)
                 Return
             End If

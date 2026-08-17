@@ -68,11 +68,12 @@ Eurocycles-BikeSpec/                  the app project
 ├── Models/                           Nomenclature, LigneNomenclature (plain data classes)
 ├── Data/                             ADO.NET data access, no ORM
 │   ├── DatabaseHelper.vb             opens connections, reads App.config
-│   ├── NomenclatureRepository.vb     GetAll, Search, GetByCode, Insert, Update, Delete
+│   ├── NomenclatureRepository.vb     GetPage, SearchPage, GetByCode, Insert, Update, Delete
 │   └── DataAccessException.vb        wraps SqlException with a friendly message
 ├── Utils/                            shared helpers used across the forms
 │   ├── Theme.vb                      brand colors and control styling
 │   ├── AllowedValues.vb              dropdown values, must match the DB CHECK constraints
+│   ├── CurrencyFormatter.vb          formats amounts with each Devise's symbol/separators
 │   ├── GenCodeValidator.vb           GenCode format check
 │   ├── LigneCodeGenerator.vb         generates codes for new BOM lines
 │   ├── LigneTotalsCalculator.vb      totals per currency

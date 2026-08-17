@@ -1,8 +1,17 @@
 Public Class FormListe
 
     Private Const SearchPlaceholder As String = "Rechercher : code, nom, marque…"
+    Private Const PageSize As Integer = 50
 
     Private ReadOnly _repository As New NomenclatureRepository()
+
+    ' --- Paging state -------------------------------------------------------------------------
+    ' _currentSearchTerm is the last term actually searched (Empty = unfiltered GetPage), kept
+    ' separate from whatever's currently typed in txtSearch so Précédent/Suivant page the
+    ' results the user is looking at, not whatever they've since typed but not searched yet.
+    Private _currentSearchTerm As String = String.Empty
+    Private _currentPage As Integer = 1
+    Private _totalPages As Integer = 1
 
     ' --- Single-window navigation state -----------------------------------------------------
     ' Nouveau/Modifier/Aperçu no longer open separate top-level windows: FormNomenclature and
@@ -22,21 +31,29 @@ Public Class FormListe
     End Sub
 
     Private Sub LoadAll()
-        Try
-            Dim list = _repository.GetAll()
-            bsNomenclatures.DataSource = list
-            UpdateStatus(list.Count)
-        Catch ex As DataAccessException
-            ShowDataError(ex)
-        End Try
+        _currentSearchTerm = String.Empty
+        _currentPage = 1
+        LoadCurrentPage()
     End Sub
 
     Private Sub PerformSearch()
-        Dim term = Theme.GetRealText(txtSearch).Trim()
+        _currentSearchTerm = Theme.GetRealText(txtSearch).Trim()
+        _currentPage = 1
+        LoadCurrentPage()
+    End Sub
+
+    ''' <summary>Fetches _currentPage of _currentSearchTerm's results (or the unfiltered list, if
+    ''' empty) and refreshes the grid, status text, and paging controls from it. The single place
+    ''' that actually calls into the repository for the list view - LoadAll/PerformSearch and the
+    ''' Précédent/Suivant handlers all just set state and call this.</summary>
+    Private Sub LoadCurrentPage()
         Try
-            Dim list = If(term.Length = 0, _repository.GetAll(), _repository.Search(term))
-            bsNomenclatures.DataSource = list
-            UpdateStatus(list.Count)
+            Dim result = If(_currentSearchTerm.Length = 0,
+                             _repository.GetPage(_currentPage, PageSize),
+                             _repository.SearchPage(_currentSearchTerm, _currentPage, PageSize))
+            bsNomenclatures.DataSource = result.Items
+            UpdateStatus(result.TotalCount)
+            UpdatePagingControls(result.TotalCount)
         Catch ex As DataAccessException
             ShowDataError(ex)
         End Try
@@ -50,6 +67,27 @@ Public Class FormListe
         Else
             lblStatusCount.Text = $"{count} nomenclatures trouvées."
         End If
+    End Sub
+
+    Private Sub UpdatePagingControls(totalCount As Integer)
+        _totalPages = Math.Max(1, CInt(Math.Ceiling(totalCount / CDbl(PageSize))))
+        If _currentPage > _totalPages Then _currentPage = _totalPages ' defensive: e.g. deleting the last row on the last page
+
+        lblPageIndicator.Text = $"Page {_currentPage} / {_totalPages}"
+        btnPagePrecedent.Enabled = _currentPage > 1
+        btnPageSuivant.Enabled = _currentPage < _totalPages
+    End Sub
+
+    Private Sub btnPagePrecedent_Click(sender As Object, e As EventArgs) Handles btnPagePrecedent.Click
+        If _currentPage <= 1 Then Return
+        _currentPage -= 1
+        LoadCurrentPage()
+    End Sub
+
+    Private Sub btnPageSuivant_Click(sender As Object, e As EventArgs) Handles btnPageSuivant.Click
+        If _currentPage >= _totalPages Then Return
+        _currentPage += 1
+        LoadCurrentPage()
     End Sub
 
     Private Sub btnSearch_Click(sender As Object, e As EventArgs) Handles btnSearch.Click

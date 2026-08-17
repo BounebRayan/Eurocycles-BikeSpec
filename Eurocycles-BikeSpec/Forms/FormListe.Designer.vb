@@ -49,6 +49,10 @@ Partial Class FormListe
         Me.pnlBottom = New Panel()
         Me.lblStatusCount = New Label()
         Me.pnlBottomButtons = New FlowLayoutPanel()
+        Me.pnlPagination = New FlowLayoutPanel()
+        Me.btnPagePrecedent = New Button()
+        Me.lblPageIndicator = New Label()
+        Me.btnPageSuivant = New Button()
         Me.btnModifier = New Button()
         Me.btnSupprimer = New Button()
         Me.btnApercu = New Button()
@@ -228,11 +232,45 @@ Partial Class FormListe
         Me.btnApercu.Margin = New Padding(8, 0, 0, 0)
         Theme.ApplyPrimaryButton(Me.btnApercu)
 
-        ' Order controls RightToLeft-flow so the visual order reads Modifier, Supprimer, Aperçu
-        ' (rightmost = Aperçu, matching the mockup) - first added ends up rightmost.
+        ' pnlPagination - nested inside pnlBottomButtons (rather than a second Dock=Right panel
+        ' of its own) so it reliably lands to the left of Modifier/Supprimer/Aperçu: pnlBottomButtons
+        ' already flows RightToLeft, so whatever's added last ends up leftmost.
+        Me.pnlPagination.AutoSize = True
+        Me.pnlPagination.WrapContents = False
+        Me.pnlPagination.FlowDirection = FlowDirection.LeftToRight
+        Me.pnlPagination.Margin = New Padding(8, 0, 24, 0)
+
+        Me.btnPagePrecedent.AutoSize = True
+        Me.btnPagePrecedent.Height = 30
+        Me.btnPagePrecedent.Text = "‹ Précédent"
+        Me.btnPagePrecedent.Enabled = False
+        Me.btnPagePrecedent.Margin = New Padding(0, 0, 8, 0)
+        Theme.ApplyOutlineButton(Me.btnPagePrecedent)
+
+        Me.lblPageIndicator.AutoSize = True
+        Me.lblPageIndicator.Text = "Page 1 / 1"
+        Me.lblPageIndicator.Font = Theme.BodyFont
+        Me.lblPageIndicator.ForeColor = Theme.Navy
+        Me.lblPageIndicator.Margin = New Padding(0, 7, 8, 0) ' nudge down to roughly center against the 30px-tall buttons
+
+        Me.btnPageSuivant.AutoSize = True
+        Me.btnPageSuivant.Height = 30
+        Me.btnPageSuivant.Text = "Suivant ›"
+        Me.btnPageSuivant.Enabled = False
+        Me.btnPageSuivant.Margin = New Padding(0)
+        Theme.ApplyOutlineButton(Me.btnPageSuivant)
+
+        Me.pnlPagination.Controls.Add(Me.btnPagePrecedent)
+        Me.pnlPagination.Controls.Add(Me.lblPageIndicator)
+        Me.pnlPagination.Controls.Add(Me.btnPageSuivant)
+
+        ' Order controls RightToLeft-flow so the visual order reads [pagination] Modifier,
+        ' Supprimer, Aperçu (rightmost = Aperçu, matching the mockup) - first added ends up
+        ' rightmost, so pnlPagination (added last) lands furthest left.
         Me.pnlBottomButtons.Controls.Add(Me.btnApercu)
         Me.pnlBottomButtons.Controls.Add(Me.btnSupprimer)
         Me.pnlBottomButtons.Controls.Add(Me.btnModifier)
+        Me.pnlBottomButtons.Controls.Add(Me.pnlPagination)
 
         ' pnlListView - everything above, as one swappable unit
         Me.pnlListView.Dock = DockStyle.Fill
@@ -251,7 +289,7 @@ Partial Class FormListe
         Me.AutoScaleMode = AutoScaleMode.Font
         Me.BackColor = Theme.CardBackground
         Me.ClientSize = New Size(1040, 700)
-        Me.Text = "Eurocycles BikeSpec" ' the OS window/taskbar title stays constant regardless of screen
+        Me.Text = "Nomenclature (Fiche technique vélo)" ' the OS window/taskbar title stays constant regardless of screen
         Me.Controls.Add(Me.pnlContent)
         Me.Controls.Add(Me.pnlListView)
         Me.Controls.Add(Theme.BuildHeaderStrip("BikeSpec » Liste des nomenclatures", Me.lblHeaderSubtitle))
@@ -286,6 +324,10 @@ Partial Class FormListe
     Friend WithEvents dgvNomenclatures As DataGridView
     Friend WithEvents pnlBottom As Panel
     Friend WithEvents pnlBottomButtons As FlowLayoutPanel
+    Friend WithEvents pnlPagination As FlowLayoutPanel
+    Friend WithEvents btnPagePrecedent As Button
+    Friend WithEvents lblPageIndicator As Label
+    Friend WithEvents btnPageSuivant As Button
     Friend WithEvents btnModifier As Button
     Friend WithEvents btnSupprimer As Button
     Friend WithEvents btnApercu As Button
