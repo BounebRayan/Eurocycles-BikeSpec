@@ -95,6 +95,7 @@ Public Class FormNomenclature
 
     Private Sub RefreshTotals()
         lblTotaux.Text = LigneTotalsCalculator.FormatTotals(_lignes)
+        lblLignesTitle.Text = $"Lignes de la nomenclature ({_lignes.Count})"
     End Sub
 
     Private Sub dgvLignes_CellEndEdit(sender As Object, e As DataGridViewCellEventArgs) Handles dgvLignes.CellEndEdit

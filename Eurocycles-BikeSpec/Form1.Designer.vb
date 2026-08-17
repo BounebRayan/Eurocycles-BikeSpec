@@ -233,10 +233,10 @@ Partial Class Form1
         Me.AutoScaleMode = AutoScaleMode.Font
         Me.BackColor = Theme.CardBackground
         Me.ClientSize = New Size(1040, 700)
-        Me.Text = "Eurocycles BikeSpec - Nomenclatures"
+        Me.Text = "Eurocycles BikeSpec" ' the OS window/taskbar title stays constant regardless of screen
         Me.Controls.Add(Me.pnlContent)
         Me.Controls.Add(Me.pnlListView)
-        Me.Controls.Add(Theme.BuildHeaderStrip("BikeSpec — Nomenclatures", Me.lblHeaderSubtitle))
+        Me.Controls.Add(Theme.BuildHeaderStrip("BikeSpec » Nomenclatures", Me.lblHeaderSubtitle))
 
         CType(Me.bsNomenclatures, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.dgvNomenclatures, System.ComponentModel.ISupportInitialize).EndInit()

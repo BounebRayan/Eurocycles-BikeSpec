@@ -51,6 +51,7 @@ Public Class FormApercu
         picPhoto.Image = PhotoHelper.TryLoadImage(_nomenclature.Photo)
 
         dgvLignes.DataSource = _lignes
+        lblLignesTitle.Text = $"Lignes de la nomenclature ({_lignes.Count})"
         lblTotaux.Text = LigneTotalsCalculator.FormatTotals(_lignes)
     End Sub
 

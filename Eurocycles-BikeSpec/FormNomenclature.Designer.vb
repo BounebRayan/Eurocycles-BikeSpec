@@ -67,10 +67,10 @@ Partial Class FormNomenclature
         Me.btnAjouterLigne = New Button()
         Me.btnSupprimerLigne = New Button()
         Me.dgvLignes = New DataGridView()
-        Me.pnlTotaux = New Panel()
-        Me.lblTotaux = New Label()
 
-        Me.pnlBottom = New FlowLayoutPanel()
+        Me.pnlBottom = New Panel()
+        Me.lblTotaux = New Label()
+        Me.pnlBottomButtons = New FlowLayoutPanel()
         Me.btnEnregistrer = New Button()
         Me.btnAnnuler = New Button()
         Me.btnApercu = New Button()
@@ -85,8 +85,8 @@ Partial Class FormNomenclature
         Me.grpLignes.SuspendLayout()
         Me.pnlLignesHeader.SuspendLayout()
         Me.pnlLignesButtons.SuspendLayout()
-        Me.pnlTotaux.SuspendLayout()
         Me.pnlBottom.SuspendLayout()
+        Me.pnlBottomButtons.SuspendLayout()
         Me.SuspendLayout()
 
         ' errorProvider
@@ -179,7 +179,6 @@ Partial Class FormNomenclature
         Me.grpLignes.BackColor = Theme.CardBackground
         Me.grpLignes.Padding = New Padding(22, 14, 22, 14)
         Me.grpLignes.Controls.Add(Me.dgvLignes)
-        Me.grpLignes.Controls.Add(Me.pnlTotaux)
         Me.grpLignes.Controls.Add(Me.pnlLignesHeader)
 
         ' pnlLignesHeader
@@ -190,7 +189,7 @@ Partial Class FormNomenclature
 
         Me.lblLignesTitle.Dock = DockStyle.Fill
         Me.lblLignesTitle.TextAlign = ContentAlignment.MiddleLeft
-        Me.lblLignesTitle.Text = "Lignes de la nomenclature"
+        Me.lblLignesTitle.Text = "Lignes de la nomenclature (0)" ' count kept live by RefreshTotals()
         Theme.ApplySectionHeader(Me.lblLignesTitle)
 
         Me.pnlLignesButtons.Dock = DockStyle.Right
@@ -259,22 +258,26 @@ Partial Class FormNomenclature
             colCode, colDesignation, colQuantite, colPrix, colFabricant, colImprime, colObservation, colDevise
         })
 
-        ' pnlTotaux
-        Me.pnlTotaux.Dock = DockStyle.Bottom
-        Me.pnlTotaux.Height = 32
+        ' pnlBottom (footer: total text left, action buttons right - one row, matching Form1)
+        Me.pnlBottom.Dock = DockStyle.Bottom
+        Me.pnlBottom.Height = 58
+        Me.pnlBottom.BackColor = Theme.CardBackground
+        Me.pnlBottom.Padding = New Padding(22, 0, 22, 0)
+        Me.pnlBottom.Controls.Add(Me.pnlBottomButtons)
+        Me.pnlBottom.Controls.Add(Me.lblTotaux)
+
         Me.lblTotaux.Dock = DockStyle.Fill
         Me.lblTotaux.TextAlign = ContentAlignment.MiddleLeft
         Me.lblTotaux.ForeColor = Theme.Navy
         Me.lblTotaux.Font = New Font(Theme.BodyFont, FontStyle.Bold)
-        Me.pnlTotaux.Controls.Add(Me.lblTotaux)
 
-        ' pnlBottom
-        Me.pnlBottom.Dock = DockStyle.Bottom
-        Me.pnlBottom.AutoSize = True
-        Me.pnlBottom.WrapContents = False
-        Me.pnlBottom.FlowDirection = FlowDirection.RightToLeft
-        Me.pnlBottom.BackColor = Theme.CardBackground
-        Me.pnlBottom.Padding = New Padding(22, 12, 22, 12)
+        ' pnlBottomButtons - right edge flush with pnlBottom's own 22px padding, same as the
+        ' table above (grpLignes uses the same 22px padding), so the last button lines up with
+        ' the table's right edge exactly.
+        Me.pnlBottomButtons.Dock = DockStyle.Right
+        Me.pnlBottomButtons.AutoSize = True
+        Me.pnlBottomButtons.WrapContents = False
+        Me.pnlBottomButtons.FlowDirection = FlowDirection.RightToLeft
         Me.btnEnregistrer.AutoSize = True
         Me.btnEnregistrer.Height = 32
         Me.btnEnregistrer.Text = "Enregistrer"
@@ -290,9 +293,9 @@ Partial Class FormNomenclature
         Me.btnApercu.Text = "Aperçu"
         Me.btnApercu.Margin = New Padding(8, 0, 0, 0)
         Theme.ApplyOutlineButton(Me.btnApercu)
-        Me.pnlBottom.Controls.Add(Me.btnEnregistrer)
-        Me.pnlBottom.Controls.Add(Me.btnAnnuler)
-        Me.pnlBottom.Controls.Add(Me.btnApercu)
+        Me.pnlBottomButtons.Controls.Add(Me.btnEnregistrer)
+        Me.pnlBottomButtons.Controls.Add(Me.btnAnnuler)
+        Me.pnlBottomButtons.Controls.Add(Me.btnApercu)
 
         ' FormNomenclature
         ' Note: this form is only ever shown embedded inside Form1's content panel (never as its
@@ -318,10 +321,10 @@ Partial Class FormNomenclature
         Me.pnlLignesButtons.ResumeLayout(False)
         Me.pnlLignesButtons.PerformLayout()
         Me.pnlLignesHeader.ResumeLayout(False)
-        Me.pnlTotaux.ResumeLayout(False)
         Me.grpLignes.ResumeLayout(False)
+        Me.pnlBottomButtons.ResumeLayout(False)
+        Me.pnlBottomButtons.PerformLayout()
         Me.pnlBottom.ResumeLayout(False)
-        Me.pnlBottom.PerformLayout()
         Me.ResumeLayout(False)
     End Sub
 
@@ -369,9 +372,9 @@ Partial Class FormNomenclature
     Friend WithEvents btnAjouterLigne As Button
     Friend WithEvents btnSupprimerLigne As Button
     Friend WithEvents dgvLignes As DataGridView
-    Friend WithEvents pnlTotaux As Panel
+    Friend WithEvents pnlBottom As Panel
     Friend WithEvents lblTotaux As Label
-    Friend WithEvents pnlBottom As FlowLayoutPanel
+    Friend WithEvents pnlBottomButtons As FlowLayoutPanel
     Friend WithEvents btnEnregistrer As Button
     Friend WithEvents btnAnnuler As Button
     Friend WithEvents btnApercu As Button
