@@ -87,12 +87,12 @@ Public Module Theme
         grid.DefaultCellStyle.BackColor = CardBackground
         grid.DefaultCellStyle.ForeColor = Navy
         grid.DefaultCellStyle.Font = BodyFont
-        grid.DefaultCellStyle.SelectionBackColor = NavyHover
-        grid.DefaultCellStyle.SelectionForeColor = Color.White
+        grid.DefaultCellStyle.SelectionBackColor = HoverFill
+        grid.DefaultCellStyle.SelectionForeColor = Navy
         grid.DefaultCellStyle.Padding = New Padding(4, 2, 4, 2)
         grid.AlternatingRowsDefaultCellStyle.BackColor = CardBackground
         grid.RowTemplate.Height = 30
-        grid.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal
+        grid.CellBorderStyle = DataGridViewCellBorderStyle.Single
         grid.RowHeadersBorderStyle = DataGridViewHeaderBorderStyle.None
     End Sub
 

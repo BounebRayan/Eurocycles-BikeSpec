@@ -51,9 +51,10 @@ Public Class NomenclatureRepository
             ORDER BY Code;"
 
         Try
+            Dim safeTerm = searchTerm.Replace("[", "[[]").Replace("%", "[%]").Replace("_", "[_]")
             Using connection = DatabaseHelper.CreateConnection()
                 Using command As New SqlCommand(sql, connection)
-                    command.Parameters.AddWithValue("@Term", "%" & searchTerm & "%")
+                    command.Parameters.AddWithValue("@Term", "%" & safeTerm & "%")
                     connection.Open()
                     Using reader = command.ExecuteReader()
                         While reader.Read()
@@ -139,7 +140,6 @@ Public Class NomenclatureRepository
 
                     transaction.Commit()
                 Catch ex As SqlException
-                    transaction.Rollback()
                     Throw New DataAccessException("Impossible d'enregistrer la nomenclature.", ex)
                 End Try
             End Using
@@ -188,7 +188,6 @@ Public Class NomenclatureRepository
 
                     transaction.Commit()
                 Catch ex As SqlException
-                    transaction.Rollback()
                     Throw New DataAccessException("Impossible de mettre à jour la nomenclature.", ex)
                 End Try
             End Using
@@ -216,7 +215,6 @@ Public Class NomenclatureRepository
 
                     transaction.Commit()
                 Catch ex As SqlException
-                    transaction.Rollback()
                     Throw New DataAccessException("Impossible de supprimer la nomenclature.", ex)
                 End Try
             End Using

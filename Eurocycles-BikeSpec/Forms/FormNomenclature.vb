@@ -69,6 +69,7 @@ Public Class FormNomenclature
         _lignes = New BindingList(Of LigneNomenclature)(lines)
         dgvLignes.DataSource = _lignes
         RefreshTotals()
+        UpdateSupprimerLigneButtonState()
 
         ' Wired after PopulateForm()/lines are bound so initial population never marks the form dirty.
         WireDirtyTracking()
@@ -201,6 +202,7 @@ Public Class FormNomenclature
         dgvLignes.BeginEdit(True)
         _isDirty = True
         RefreshTotals()
+        UpdateSupprimerLigneButtonState()
     End Sub
 
     Private Sub btnSupprimerLigne_Click(sender As Object, e As EventArgs) Handles btnSupprimerLigne.Click
@@ -217,6 +219,22 @@ Public Class FormNomenclature
         _lignes.Remove(line)
         _isDirty = True
         RefreshTotals()
+        UpdateSupprimerLigneButtonState()
+    End Sub
+
+    ''' <summary>Colors "Supprimer ligne" red only while a ligne row is actually selected (i.e. the
+    ''' button would do something), instead of always showing it in the same muted gray whether or
+    ''' not there's anything to delete.</summary>
+    Private Sub dgvLignes_SelectionChanged(sender As Object, e As EventArgs) Handles dgvLignes.SelectionChanged
+        UpdateSupprimerLigneButtonState()
+    End Sub
+
+    Private Sub UpdateSupprimerLigneButtonState()
+        If dgvLignes.CurrentRow Is Nothing Then
+            Theme.ApplyMutedButton(btnSupprimerLigne)
+        Else
+            Theme.ApplyDangerButton(btnSupprimerLigne)
+        End If
     End Sub
 
     Private Sub dgvLignes_DataError(sender As Object, e As DataGridViewDataErrorEventArgs) Handles dgvLignes.DataError
@@ -374,6 +392,13 @@ Public Class FormNomenclature
             Me.DialogResult = DialogResult.OK
             Me.Close()
         Catch ex As DataAccessException
+            If ex.InnerException IsNot Nothing AndAlso TypeOf ex.InnerException Is Microsoft.Data.SqlClient.SqlException Then
+                Dim sqlEx = DirectCast(ex.InnerException, Microsoft.Data.SqlClient.SqlException)
+                If sqlEx.Number = 2627 OrElse sqlEx.Number = 2601 Then ' Primary Key violation / Unique constraint
+                    MessageBox.Show($"Un élément avec le code '{_nomenclature.Code}' existe déjà. Veuillez utiliser un code unique.", "Code Dupliqué", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                    Return
+                End If
+            End If
             MessageBox.Show(ex.Message, "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
     End Sub

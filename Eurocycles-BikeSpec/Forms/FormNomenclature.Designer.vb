@@ -287,7 +287,7 @@ Partial Class FormNomenclature
         Me.btnAnnuler.Height = 32
         Me.btnAnnuler.Text = "Annuler"
         Me.btnAnnuler.Margin = New Padding(8, 0, 0, 0)
-        Theme.ApplyMutedButton(Me.btnAnnuler)
+        Theme.ApplyDangerButton(Me.btnAnnuler)
         Me.btnApercu.AutoSize = True
         Me.btnApercu.Height = 32
         Me.btnApercu.Text = "Aperçu"
